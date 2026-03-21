@@ -178,7 +178,6 @@ function FinishedBooksTab() {
                     fontFamily: 'Pretendard, sans-serif',
                   }}
                   formatter={(value, name) => [`${Number(value)}p`, '페이지'] as [string, string]}
-                  labelFormatter={(label: string) => label}
                 />
                 <Bar dataKey="pages" radius={[6, 6, 0, 0]} minPointSize={40} label={<CustomBarLabel />}>
                   {chartData.map((entry, i) => (
