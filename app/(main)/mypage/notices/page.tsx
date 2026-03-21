@@ -1,4 +1,4 @@
-import { createServerSupabaseClient } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 
 type NoticeCategory = '업데이트' | '이벤트' | '점검' | '공지'
@@ -24,7 +24,7 @@ function formatDate(dateStr: string) {
 }
 
 export default async function NoticesPage() {
-  const supabase = await createServerSupabaseClient()
+  const supabase = await createClient()
 
   const { data, error } = await supabase
     .from('notices')

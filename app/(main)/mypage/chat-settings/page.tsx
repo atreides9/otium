@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/client';
 
 const DAYS = ['월', '화', '수', '목', '금', '토', '일'] as const;
 type Day = (typeof DAYS)[number];

@@ -1,6 +1,6 @@
 'use client'
 
-import { createClient } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 import { Provider } from '@supabase/supabase-js'
 
 const providers: { id: Provider; label: string; bg: string; text: string; border?: string }[] = [

@@ -1,4 +1,4 @@
-import { createServerSupabaseClient } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 
@@ -71,7 +71,7 @@ function Avatar({ url, nickname, size = 44, online = false }: {
 }
 
 export default async function FriendPage() {
-  const supabase = await createServerSupabaseClient()
+  const supabase = await createClient()
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) redirect('/login')
 

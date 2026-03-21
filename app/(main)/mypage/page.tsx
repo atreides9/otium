@@ -1,4 +1,4 @@
-import { createServerSupabaseClient } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import NotificationToggle from '@/components/mypage/NotificationToggle'
@@ -57,7 +57,7 @@ function getXpSegments(xp: number) {
 }
 
 export default async function MyPage() {
-  const supabase = await createServerSupabaseClient()
+  const supabase = await createClient()
 
   const {
     data: { user },
