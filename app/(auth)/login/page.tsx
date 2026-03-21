@@ -17,7 +17,8 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=/home`,
+        scopes: 'profile_nickname profile_image',
+        redirectTo: `${location.origin}/auth/callback?next=/home`,
       },
     })
     if (error) console.error(error.message)
