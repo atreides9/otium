@@ -177,7 +177,9 @@ function FinishedBooksTab() {
                     fontSize: 12,
                     fontFamily: 'Pretendard, sans-serif',
                   }}
-                  formatter={(v: number) => [`${v}p`, '페이지']}
+                  formatter={(value: number | string | undefined) => [
+                    value !== undefined ? `${value}p` : '', '페이지'
+                  ]}
                   labelFormatter={(label: string) => label}
                 />
                 <Bar dataKey="pages" radius={[6, 6, 0, 0]} minPointSize={40} label={<CustomBarLabel />}>
