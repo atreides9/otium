@@ -2,162 +2,37 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { Home, Compass, PenLine, Users, BookMarked, type LucideIcon } from 'lucide-react'
 
-const tabs = [
-  {
-    href: '/home',
-    label: '홈',
-    icon: (active: boolean) => (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path
-          d="M3 9.5L12 3L21 9.5V20C21 20.5523 20.5523 21 20 21H15V15H9V21H4C3.44772 21 3 20.5523 3 20V9.5Z"
-          stroke={active ? 'var(--color-primary)' : 'var(--color-text-3)'}
-          strokeWidth="1.8"
-          strokeLinejoin="round"
-          fill={active ? 'var(--color-primary)' : 'none'}
-          fillOpacity={active ? 0.12 : 0}
-        />
-      </svg>
-    ),
-  },
-  {
-    href: '/explore',
-    label: '탐색',
-    icon: (active: boolean) => (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle
-          cx="11"
-          cy="11"
-          r="7"
-          stroke={active ? 'var(--color-primary)' : 'var(--color-text-3)'}
-          strokeWidth="1.8"
-        />
-        <path
-          d="M20 20L16.5 16.5"
-          stroke={active ? 'var(--color-primary)' : 'var(--color-text-3)'}
-          strokeWidth="1.8"
-          strokeLinecap="round"
-        />
-      </svg>
-    ),
-  },
-  {
-    href: '/records',
-    label: '기록',
-    icon: (active: boolean) => (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect
-          x="3"
-          y="3"
-          width="18"
-          height="18"
-          rx="3"
-          stroke={active ? 'var(--color-primary)' : 'var(--color-text-3)'}
-          strokeWidth="1.8"
-          fill={active ? 'var(--color-primary)' : 'none'}
-          fillOpacity={active ? 0.12 : 0}
-        />
-        <path
-          d="M7 15L10 11L13 13L16 9"
-          stroke={active ? 'var(--color-primary)' : 'var(--color-text-3)'}
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    ),
-  },
-  {
-    href: '/friend',
-    label: '친구',
-    icon: (active: boolean) => (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle
-          cx="9"
-          cy="8"
-          r="3.5"
-          stroke={active ? 'var(--color-primary)' : 'var(--color-text-3)'}
-          strokeWidth="1.8"
-        />
-        <path
-          d="M3 19C3 16.2386 5.68629 14 9 14C12.3137 14 15 16.2386 15 19"
-          stroke={active ? 'var(--color-primary)' : 'var(--color-text-3)'}
-          strokeWidth="1.8"
-          strokeLinecap="round"
-        />
-        <path
-          d="M16 6C17.6569 6 19 7.34315 19 9C19 10.6569 17.6569 12 16 12"
-          stroke={active ? 'var(--color-primary)' : 'var(--color-text-3)'}
-          strokeWidth="1.8"
-          strokeLinecap="round"
-        />
-        <path
-          d="M18 14C20.2091 14.5 22 16.5 22 19"
-          stroke={active ? 'var(--color-primary)' : 'var(--color-text-3)'}
-          strokeWidth="1.8"
-          strokeLinecap="round"
-        />
-      </svg>
-    ),
-  },
-  {
-    href: '/mypage',
-    label: '내서재',
-    icon: (active: boolean) => (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect
-          x="4"
-          y="3"
-          width="5"
-          height="18"
-          rx="1"
-          stroke={active ? 'var(--color-primary)' : 'var(--color-text-3)'}
-          strokeWidth="1.8"
-          fill={active ? 'var(--color-primary)' : 'none'}
-          fillOpacity={active ? 0.12 : 0}
-        />
-        <rect
-          x="10"
-          y="3"
-          width="5"
-          height="18"
-          rx="1"
-          stroke={active ? 'var(--color-primary)' : 'var(--color-text-3)'}
-          strokeWidth="1.8"
-          fill={active ? 'var(--color-primary)' : 'none'}
-          fillOpacity={active ? 0.12 : 0}
-        />
-        <path
-          d="M16.5 4L20.5 5.5V20.5L16.5 19V4Z"
-          stroke={active ? 'var(--color-primary)' : 'var(--color-text-3)'}
-          strokeWidth="1.8"
-          strokeLinejoin="round"
-          fill={active ? 'var(--color-primary)' : 'none'}
-          fillOpacity={active ? 0.12 : 0}
-        />
-      </svg>
-    ),
-  },
+const tabs: { href: string; label: string; Icon: LucideIcon }[] = [
+  { href: '/home',    label: '홈',    Icon: Home },
+  { href: '/explore', label: '탐색',  Icon: Compass },
+  { href: '/records', label: '기록',  Icon: PenLine },
+  { href: '/friend',  label: '친구',  Icon: Users },
+  { href: '/mypage',  label: '내서재', Icon: BookMarked },
 ]
 
 export default function GNB() {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-surface border-t border-border z-50">
-      <div className="flex items-center justify-around px-2 pb-safe">
-        {tabs.map(({ href, label, icon }) => {
+    <nav className="fixed bottom-0 left-0 right-0 h-[56px] border-t border-[#D4CAC2] bg-[#F5F0E8] z-50">
+      <div className="flex items-center justify-around h-full px-2">
+        {tabs.map(({ href, label, Icon }) => {
           const active = pathname === href
           return (
             <Link
               key={href}
               href={href}
-              className="flex flex-col items-center gap-1 py-3 px-4 min-w-[60px]"
+              className="min-w-[60px] h-full flex flex-col items-center justify-center gap-1"
             >
-              {icon(active)}
+              <Icon
+                size={24}
+                color={active ? '#4A7C59' : '#8C7B6E'}
+                strokeWidth={active ? 2.2 : 1.8}
+              />
               <span
-                className="text-[11px] font-medium leading-none"
-                style={{ color: active ? 'var(--color-primary)' : 'var(--color-text-3)' }}
+                className={`text-[10px] leading-none ${active ? 'font-semibold text-[#2D5A35]' : 'text-[#8C7B6E]'}`}
               >
                 {label}
               </span>
