@@ -92,23 +92,22 @@ export default function NicknamePage() {
   const canSave = isValid && isDuplicateChecked && !isDuplicate
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F0EDE8' }}>
+    <div className="min-h-screen bg-canvas">
       {/* Header */}
       <div
-        className="flex items-center justify-between px-5 pt-14 pb-4"
-        style={{ backgroundColor: '#F0EDE8' }}
+        className="flex items-center justify-between px-5 pt-14 pb-4 bg-canvas"
       >
         <button onClick={() => router.back()} className="p-1 -ml-1">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M15 18L9 12L15 6" stroke="#1A1A1A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M15 18L9 12L15 6" stroke="var(--color-text-1)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
-        <h1 className="text-base font-bold" style={{ color: '#1A1A1A' }}>닉네임 수정</h1>
+        <h1 className="text-base font-bold text-text-1">닉네임 수정</h1>
         <button
           onClick={handleSave}
           disabled={!canSave || isSaving}
           className="text-sm font-semibold transition-opacity"
-          style={{ color: canSave ? '#4A7C5F' : '#BBBBBB' }}
+          style={{ color: canSave ? 'var(--color-primary)' : 'var(--color-text-4)' }}
         >
           {isSaving ? '저장 중…' : '완료'}
         </button>
@@ -117,32 +116,31 @@ export default function NicknamePage() {
       <div className="px-5 flex flex-col gap-4">
         {/* 에러 */}
         {error && (
-          <div className="rounded-xl px-4 py-3 text-sm" style={{ backgroundColor: '#FDECEA', color: '#C0392B' }}>
+          <div className="rounded-xl px-4 py-3 text-sm bg-danger-tint" style={{ color: '#C0392B' }}>
             {error}
           </div>
         )}
 
         {/* 현재 닉네임 카드 */}
-        <div className="rounded-2xl p-5" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E1DC' }}>
-          <p className="text-xs font-semibold mb-3" style={{ color: '#999999' }}>현재 닉네임</p>
+        <div className="rounded-2xl p-5 bg-surface border border-border">
+          <p className="text-xs font-semibold mb-3 text-text-3">현재 닉네임</p>
           <div className="flex items-center gap-3">
             <div
-              className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
-              style={{ backgroundColor: '#4A7C5F' }}
+              className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 bg-primary"
             >
               <span className="text-lg font-bold text-white">
                 {currentNickname ? getInitial(currentNickname) : '?'}
               </span>
             </div>
-            <span className="text-base font-bold" style={{ color: '#1A1A1A' }}>
+            <span className="text-base font-bold text-text-1">
               {currentNickname || '불러오는 중…'}
             </span>
           </div>
         </div>
 
         {/* 새 닉네임 입력 카드 */}
-        <div className="rounded-2xl p-5" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E1DC' }}>
-          <p className="text-xs font-semibold mb-3" style={{ color: '#999999' }}>새 닉네임</p>
+        <div className="rounded-2xl p-5 bg-surface border border-border">
+          <p className="text-xs font-semibold mb-3 text-text-3">새 닉네임</p>
           <div className="flex gap-2">
             <input
               type="text"
@@ -152,8 +150,8 @@ export default function NicknamePage() {
               maxLength={10}
               className="flex-1 rounded-xl px-4 py-3 text-sm outline-none"
               style={{
-                backgroundColor: '#F0EDE8',
-                color: '#1A1A1A',
+                backgroundColor: 'var(--color-canvas)',
+                color: 'var(--color-text-1)',
                 border: input && !isValid ? '1px solid #E74C3C' : '1px solid transparent',
               }}
             />
@@ -162,8 +160,8 @@ export default function NicknamePage() {
               disabled={!isValid || isChecking}
               className="rounded-xl px-4 py-3 text-sm font-semibold flex-shrink-0 transition-opacity"
               style={{
-                backgroundColor: isValid ? '#4A7C5F' : '#E5E1DC',
-                color: isValid ? '#FFFFFF' : '#999999',
+                backgroundColor: isValid ? 'var(--color-primary)' : 'var(--color-border)',
+                color: isValid ? '#FFFFFF' : 'var(--color-text-3)',
               }}
             >
               {isChecking ? '확인 중…' : '중복 확인'}
@@ -177,7 +175,7 @@ export default function NicknamePage() {
             </p>
           )}
           {isDuplicateChecked && (
-            <p className="mt-2 text-xs" style={{ color: isDuplicate ? '#E74C3C' : '#4A7C5F' }}>
+            <p className="mt-2 text-xs" style={{ color: isDuplicate ? '#E74C3C' : 'var(--color-primary)' }}>
               {isDuplicate ? '이미 사용 중인 닉네임입니다.' : '사용 가능한 닉네임입니다.'}
             </p>
           )}
@@ -185,10 +183,9 @@ export default function NicknamePage() {
 
         {/* 안내 카드 */}
         <div
-          className="rounded-2xl p-5"
-          style={{ backgroundColor: '#FDF8EC', border: '1px solid #EDD98A' }}
+          className="rounded-2xl p-5 bg-warning-tint border border-warning-border"
         >
-          <p className="text-sm font-bold mb-2" style={{ color: '#C4973A' }}>닉네임 안내</p>
+          <p className="text-sm font-bold mb-2 text-amber">닉네임 안내</p>
           <ul className="flex flex-col gap-1.5">
             {[
               '2자 이상 10자 이하',
@@ -196,8 +193,8 @@ export default function NicknamePage() {
               '특수문자 사용 불가',
               '30일에 한 번만 변경 가능',
             ].map((item) => (
-              <li key={item} className="flex items-start gap-2 text-sm" style={{ color: '#666666' }}>
-                <span className="mt-0.5 flex-shrink-0" style={{ color: '#C4973A' }}>·</span>
+              <li key={item} className="flex items-start gap-2 text-sm text-text-2">
+                <span className="mt-0.5 flex-shrink-0 text-amber">·</span>
                 {item}
               </li>
             ))}

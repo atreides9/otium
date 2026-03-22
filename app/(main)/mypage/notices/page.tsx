@@ -34,21 +34,21 @@ export default async function NoticesPage() {
   const notices: Notice[] = error || !data ? [] : (data as Notice[])
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F0EDE8' }}>
+    <div className="min-h-screen bg-canvas">
       {/* Header */}
       <div className="flex items-center gap-3 px-5 pt-14 pb-4">
         <Link href="/mypage">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path
               d="M15 18L9 12L15 6"
-              stroke="#1A1A1A"
+              stroke="var(--color-text-1)"
               strokeWidth="1.8"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
           </svg>
         </Link>
-        <h1 className="text-xl font-bold" style={{ color: '#1A1A1A' }}>
+        <h1 className="text-xl font-bold text-text-1">
           공지사항
         </h1>
       </div>
@@ -57,7 +57,7 @@ export default async function NoticesPage() {
       <div className="px-5 flex flex-col gap-3 pb-10">
         {notices.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-sm" style={{ color: '#999999' }}>
+            <p className="text-sm text-text-3">
               공지사항이 없습니다.
             </p>
           </div>
@@ -69,7 +69,7 @@ export default async function NoticesPage() {
                 key={notice.id}
                 href={`/mypage/notices/${notice.id}`}
                 className="rounded-2xl p-4 flex items-center justify-between gap-3"
-                style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E1DC' }}
+                style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
               >
                 <div className="flex flex-col gap-1.5 flex-1 min-w-0">
                   {/* Chips */}
@@ -83,18 +83,18 @@ export default async function NoticesPage() {
                     {notice.is_new && (
                       <span
                         className="px-2 py-0.5 rounded-full text-[11px] font-semibold text-white"
-                        style={{ backgroundColor: '#E53E3E' }}
+                        style={{ backgroundColor: 'var(--color-danger)' }}
                       >
                         NEW
                       </span>
                     )}
                   </div>
                   {/* Title */}
-                  <p className="text-sm font-bold truncate" style={{ color: '#1A1A1A' }}>
+                  <p className="text-sm font-bold truncate text-text-1">
                     {notice.title}
                   </p>
                   {/* Date */}
-                  <p className="text-xs" style={{ color: '#999999' }}>
+                  <p className="text-xs text-text-3">
                     {formatDate(notice.created_at)}
                   </p>
                 </div>
@@ -102,7 +102,7 @@ export default async function NoticesPage() {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="flex-shrink-0">
                   <path
                     d="M9 18L15 12L9 6"
-                    stroke="#999999"
+                    stroke="var(--color-text-3)"
                     strokeWidth="1.8"
                     strokeLinecap="round"
                     strokeLinejoin="round"

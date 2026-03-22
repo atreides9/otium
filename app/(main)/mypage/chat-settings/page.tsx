@@ -25,12 +25,12 @@ function BellIcon() {
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
       <path
         d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"
-        stroke="#4A7C5F"
+        stroke="var(--color-primary)"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="#4A7C5F" strokeWidth="2" strokeLinecap="round" />
+      <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }
@@ -38,8 +38,8 @@ function BellIcon() {
 function SoundIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" stroke="#4A7C5F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      <path d="M15.54 8.46a5 5 0 0 1 0 7.07" stroke="#4A7C5F" strokeWidth="2" strokeLinecap="round" />
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      <path d="M15.54 8.46a5 5 0 0 1 0 7.07" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }
@@ -47,9 +47,9 @@ function SoundIcon() {
 function VibrateIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <path d="M6 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2" stroke="#4A7C5F" strokeWidth="2" strokeLinecap="round" />
-      <path d="M18 5h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-2" stroke="#4A7C5F" strokeWidth="2" strokeLinecap="round" />
-      <rect x="6" y="3" width="12" height="18" rx="2" stroke="#4A7C5F" strokeWidth="2" />
+      <path d="M6 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" />
+      <path d="M18 5h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-2" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" />
+      <rect x="6" y="3" width="12" height="18" rx="2" stroke="var(--color-primary)" strokeWidth="2" />
     </svg>
   );
 }
@@ -57,8 +57,8 @@ function VibrateIcon() {
 function ClockIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="10" stroke="#4A7C5F" strokeWidth="2" />
-      <path d="M12 6v6l4 2" stroke="#4A7C5F" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="12" cy="12" r="10" stroke="var(--color-primary)" strokeWidth="2" />
+      <path d="M12 6v6l4 2" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }
@@ -68,7 +68,7 @@ function Toggle({ value, onChange }: { value: boolean; onChange: (v: boolean) =>
     <button
       onClick={() => onChange(!value)}
       className="relative w-11 h-6 rounded-full transition-colors duration-200 flex-shrink-0"
-      style={{ backgroundColor: value ? '#4A7C5F' : '#E5E1DC' }}
+      style={{ backgroundColor: value ? 'var(--color-primary)' : 'var(--color-border)' }}
     >
       <span
         className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200"
@@ -94,11 +94,11 @@ function ToggleRow({
   return (
     <div
       className="flex items-center justify-between px-4 py-3.5"
-      style={last ? undefined : { borderBottom: '1px solid #F0EDE8' }}
+      style={last ? undefined : { borderBottom: '1px solid var(--color-canvas)' }}
     >
       <div className="flex items-center gap-2.5">
         {icon}
-        <span className="text-sm" style={{ color: '#1A1A1A' }}>
+        <span className="text-sm text-text-1">
           {label}
         </span>
       </div>
@@ -110,25 +110,25 @@ function ToggleRow({
 function ConfirmModal({ onConfirm, onCancel }: { onConfirm: () => void; onCancel: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-5" style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}>
-      <div className="w-full max-w-sm rounded-2xl p-6" style={{ backgroundColor: '#FFFFFF' }}>
-        <h3 className="text-base font-bold mb-2" style={{ color: '#1A1A1A' }}>
+      <div className="w-full max-w-sm rounded-2xl p-6 bg-surface">
+        <h3 className="text-base font-bold mb-2 text-text-1">
           모든 대화 삭제
         </h3>
-        <p className="text-sm mb-6" style={{ color: '#666666' }}>
+        <p className="text-sm mb-6 text-text-2">
           삭제된 대화는 복구할 수 없습니다. 정말 삭제하시겠습니까?
         </p>
         <div className="flex gap-3">
           <button
             onClick={onCancel}
             className="flex-1 py-2.5 rounded-xl text-sm font-medium"
-            style={{ border: '1px solid #E5E1DC', color: '#666666' }}
+            style={{ border: '1px solid var(--color-border)', color: 'var(--color-text-2)' }}
           >
             취소
           </button>
           <button
             onClick={onConfirm}
             className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white"
-            style={{ backgroundColor: '#EF4444' }}
+            style={{ backgroundColor: 'var(--color-danger)' }}
           >
             삭제
           </button>
@@ -194,13 +194,13 @@ export default function ChatSettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F0EDE8] px-5 py-6 space-y-4">
+    <div className="min-h-screen bg-canvas px-5 py-6 space-y-4">
       {/* 헤더 */}
-      <h1 className="text-xl font-bold text-[#1A1A1A]">채팅 설정</h1>
+      <h1 className="text-xl font-bold text-text-1">채팅 설정</h1>
 
       {/* 알림 설정 카드 */}
-      <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E1DC' }}>
-        <p className="px-4 pt-3 pb-1 text-xs font-semibold" style={{ color: '#999999' }}>
+      <div className="rounded-2xl overflow-hidden bg-surface border border-border">
+        <p className="px-4 pt-3 pb-1 text-xs font-semibold text-text-3">
           알림 설정
         </p>
         <ToggleRow
@@ -225,14 +225,14 @@ export default function ChatSettingsPage() {
       </div>
 
       {/* 주간 리셋 요일 카드 */}
-      <div className="rounded-2xl p-4" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E1DC' }}>
+      <div className="rounded-2xl p-4 bg-surface border border-border">
         <div className="flex items-center gap-2 mb-1">
           <ClockIcon />
-          <p className="text-sm font-semibold" style={{ color: '#1A1A1A' }}>
+          <p className="text-sm font-semibold text-text-1">
             주간 리셋 요일
           </p>
         </div>
-        <p className="text-xs mb-3" style={{ color: '#999999' }}>
+        <p className="text-xs mb-3 text-text-3">
           새싹/나무 단계의 메시지 제한이 초기화되는 요일
         </p>
         <div className="flex gap-2">
@@ -244,8 +244,8 @@ export default function ChatSettingsPage() {
                 onClick={() => update({ weekly_reset_day: day })}
                 className="flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors"
                 style={{
-                  backgroundColor: selected ? '#4A7C5F' : '#F0EDE8',
-                  color: selected ? '#FFFFFF' : '#666666',
+                  backgroundColor: selected ? 'var(--color-primary)' : 'var(--color-canvas)',
+                  color: selected ? '#FFFFFF' : 'var(--color-text-2)',
                 }}
               >
                 {day}
@@ -256,29 +256,29 @@ export default function ChatSettingsPage() {
       </div>
 
       {/* 메시지 기록 카드 */}
-      <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E1DC' }}>
-        <p className="px-4 pt-3 pb-1 text-xs font-semibold" style={{ color: '#999999' }}>
+      <div className="rounded-2xl overflow-hidden bg-surface border border-border">
+        <p className="px-4 pt-3 pb-1 text-xs font-semibold text-text-3">
           메시지 기록
         </p>
         <div
           className="flex items-center justify-between px-4 py-3.5"
-          style={{ borderBottom: '1px solid #F0EDE8' }}
+          style={{ borderBottom: '1px solid var(--color-canvas)' }}
         >
-          <span className="text-sm" style={{ color: '#1A1A1A' }}>
+          <span className="text-sm text-text-1">
             모든 대화 백업
           </span>
-          <button className="text-sm font-medium" style={{ color: '#4A7C5F' }}>
+          <button className="text-sm font-medium text-primary">
             실행
           </button>
         </div>
         <div className="flex items-center justify-between px-4 py-3.5">
-          <span className="text-sm" style={{ color: '#1A1A1A' }}>
+          <span className="text-sm text-text-1">
             모든 대화 삭제
           </span>
           <button
             onClick={() => setShowDeleteModal(true)}
             className="text-sm font-medium"
-            style={{ color: '#EF4444' }}
+            style={{ color: 'var(--color-danger)' }}
           >
             삭제
           </button>
@@ -286,8 +286,8 @@ export default function ChatSettingsPage() {
       </div>
 
       {/* 채팅 제한 안내 카드 */}
-      <div className="rounded-2xl p-4" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E1DC' }}>
-        <p className="text-sm font-bold mb-3" style={{ color: '#C4973A' }}>
+      <div className="rounded-2xl p-4 bg-surface border border-border">
+        <p className="text-sm font-bold mb-3 text-amber">
           채팅 제한 안내
         </p>
         <div className="space-y-3">
@@ -310,14 +310,14 @@ export default function ChatSettingsPage() {
           ].map(({ stage, period, desc }, i) => (
             <div key={i} className="flex gap-3">
               <div className="flex-shrink-0">
-                <span className="text-sm font-semibold" style={{ color: '#1A1A1A' }}>
+                <span className="text-sm font-semibold text-text-1">
                   {stage}
                 </span>
-                <span className="ml-1 text-xs" style={{ color: '#999999' }}>
+                <span className="ml-1 text-xs text-text-3">
                   ({period})
                 </span>
               </div>
-              <p className="text-xs leading-relaxed" style={{ color: '#666666' }}>
+              <p className="text-xs leading-relaxed text-text-2">
                 {desc}
               </p>
             </div>
@@ -326,7 +326,7 @@ export default function ChatSettingsPage() {
       </div>
 
       {saving && (
-        <p className="text-center text-xs" style={{ color: '#999999' }}>
+        <p className="text-center text-xs text-text-3">
           저장 중...
         </p>
       )}

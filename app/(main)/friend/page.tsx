@@ -20,21 +20,21 @@ interface MyDNA {
 }
 
 const GENRE_COLORS: Record<string, string> = {
-  소설: '#4A7C5F',
-  시: '#6B8FB5',
-  에세이: '#C4973A',
-  자기계발: '#D4824A',
-  과학: '#3D3730',
+  소설: 'var(--color-primary)',
+  시: 'var(--color-slate)',
+  에세이: 'var(--color-amber)',
+  자기계발: 'var(--color-terracotta)',
+  과학: 'var(--color-surface-dark)',
   역사: '#8B6F47',
   철학: '#7B5EA7',
   경제: '#2E7D6E',
-  기타: '#999999',
+  기타: 'var(--color-text-3)',
 }
 
 const LEVEL_CONFIG = {
-  sprout: { label: '새싹', icon: '🌱', bg: '#FFF3E8', text: '#D4824A' },
-  tree: { label: '나무', icon: '🌳', bg: '#E8F0F8', text: '#6B8FB5' },
-  forest: { label: '숲', icon: '🌲', bg: '#E8F4EE', text: '#4A7C5F' },
+  sprout: { label: '새싹', icon: '🌱', bg: 'var(--friendship-sprout-bg)', text: 'var(--friendship-sprout-text)' },
+  tree: { label: '나무', icon: '🌳', bg: 'var(--friendship-tree-bg)', text: 'var(--friendship-tree-text)' },
+  forest: { label: '숲', icon: '🌲', bg: 'var(--friendship-forest-bg)', text: 'var(--friendship-forest-text)' },
 }
 
 function Avatar({ url, nickname, size = 44, online = false }: {
@@ -50,11 +50,11 @@ function Avatar({ url, nickname, size = 44, online = false }: {
         style={{
           width: size,
           height: size,
-          backgroundColor: url ? undefined : '#E5E1DC',
+          backgroundColor: url ? undefined : 'var(--color-border)',
           backgroundImage: url ? `url(${url})` : undefined,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          color: '#666666',
+          color: 'var(--color-text-2)',
           fontSize: size * 0.4,
         }}
       >
@@ -63,7 +63,7 @@ function Avatar({ url, nickname, size = 44, online = false }: {
       {online && (
         <span
           className="absolute bottom-0 right-0 rounded-full border-2 border-white"
-          style={{ width: 10, height: 10, backgroundColor: '#4A7C5F' }}
+          style={{ width: 10, height: 10, backgroundColor: 'var(--color-primary)' }}
         />
       )}
     </div>
@@ -92,7 +92,7 @@ export default async function FriendPage() {
   const totalBooks = Object.values(genreCounts).reduce((a, b) => a + b, 0) || 1
   const myDNA: MyDNA[] = Object.entries(genreCounts)
     .sort((a, b) => b[1] - a[1])
-    .map(([genre, count]) => ({ genre, count, color: GENRE_COLORS[genre] ?? '#999999' }))
+    .map(([genre, count]) => ({ genre, count, color: GENRE_COLORS[genre] ?? 'var(--color-text-3)' }))
 
   // 친구 목록 (mock — 실제 friends 테이블 연동 시 교체)
   const { data: friendsRaw } = await supabase
@@ -139,21 +139,18 @@ export default async function FriendPage() {
   const onlineFriends = friends.filter((f) => f.is_online)
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F0EDE8' }}>
+    <div className="min-h-screen bg-canvas">
       {/* Header */}
       <div className="px-5 pt-14 pb-4">
-        <h1 className="text-xl font-bold" style={{ color: '#1A1A1A' }}>친구</h1>
+        <h1 className="text-xl font-bold text-text-1">친구</h1>
       </div>
 
       {/* 나의 독서 DNA */}
       <section className="px-5 mb-6">
-        <p className="text-xs font-semibold mb-2" style={{ color: '#666666' }}>나의 독서 DNA</p>
-        <div
-          className="rounded-2xl p-4"
-          style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E1DC' }}
-        >
+        <p className="text-xs font-semibold mb-2 text-text-2">나의 독서 DNA</p>
+        <div className="rounded-2xl p-4 bg-surface border border-border">
           {myDNA.length === 0 ? (
-            <p className="text-sm text-center" style={{ color: '#999999' }}>완독한 책이 없어요</p>
+            <p className="text-sm text-center text-text-3">완독한 책이 없어요</p>
           ) : (
             <>
               {/* 세그먼트 바 */}
@@ -170,7 +167,7 @@ export default async function FriendPage() {
                 {myDNA.map(({ genre, count, color }) => (
                   <div key={genre} className="flex items-center gap-1">
                     <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
-                    <span className="text-[11px]" style={{ color: '#666666' }}>
+                    <span className="text-[11px] text-text-2">
                       {genre} {Math.round((count / totalBooks) * 100)}%
                     </span>
                   </div>
@@ -184,7 +181,7 @@ export default async function FriendPage() {
       {/* 온라인 친구 스토리 */}
       {onlineFriends.length > 0 && (
         <section className="mb-6">
-          <p className="text-xs font-semibold px-5 mb-3" style={{ color: '#666666' }}>
+          <p className="text-xs font-semibold px-5 mb-3 text-text-2">
             지금 온라인
           </p>
           <div className="flex gap-4 overflow-x-auto px-5 pb-1 scrollbar-none">
@@ -192,13 +189,13 @@ export default async function FriendPage() {
               <Link key={f.id} href={`/chat/${f.id}`} className="flex flex-col items-center gap-1.5 flex-shrink-0">
                 <div
                   className="p-0.5 rounded-full"
-                  style={{ background: 'linear-gradient(135deg, #4A7C5F, #C4973A)' }}
+                  style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-amber))' }}
                 >
                   <div className="p-0.5 rounded-full bg-white">
                     <Avatar url={f.avatar_url} nickname={f.nickname} size={52} online />
                   </div>
                 </div>
-                <span className="text-[11px]" style={{ color: '#666666' }}>{f.nickname}</span>
+                <span className="text-[11px] text-text-2">{f.nickname}</span>
               </Link>
             ))}
           </div>
@@ -208,13 +205,10 @@ export default async function FriendPage() {
       {/* 친구 목록 그룹 */}
       {friends.length === 0 ? (
         <div className="px-5">
-          <div
-            className="rounded-2xl p-8 text-center"
-            style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E1DC' }}
-          >
+          <div className="rounded-2xl p-8 text-center bg-surface border border-border">
             <p className="text-3xl mb-3">🌱</p>
-            <p className="text-sm font-medium" style={{ color: '#1A1A1A' }}>아직 친구가 없어요</p>
-            <p className="text-xs mt-1" style={{ color: '#999999' }}>친구를 추가해 독서를 함께해요</p>
+            <p className="text-sm font-medium text-text-1">아직 친구가 없어요</p>
+            <p className="text-xs mt-1 text-text-3">친구를 추가해 독서를 함께해요</p>
           </div>
         </div>
       ) : (
@@ -231,7 +225,7 @@ export default async function FriendPage() {
                 <div key={key}>
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-base">{cfg.icon}</span>
-                    <span className="text-sm font-semibold" style={{ color: '#1A1A1A' }}>{cfg.label}</span>
+                    <span className="text-sm font-semibold text-text-1">{cfg.label}</span>
                     <span
                       className="text-xs px-2 py-0.5 rounded-full font-medium"
                       style={{ backgroundColor: cfg.bg, color: cfg.text }}
@@ -239,21 +233,18 @@ export default async function FriendPage() {
                       {list.length}명
                     </span>
                   </div>
-                  <div
-                    className="rounded-2xl overflow-hidden"
-                    style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E1DC' }}
-                  >
+                  <div className="rounded-2xl overflow-hidden bg-surface border border-border">
                     {list.map((f, i) => (
                       <Link
                         key={f.id}
                         href={`/chat/${f.id}`}
                         className="flex items-center gap-3 px-4 py-3.5 active:bg-gray-50"
-                        style={i < list.length - 1 ? { borderBottom: '1px solid #F0EDE8' } : {}}
+                        style={i < list.length - 1 ? { borderBottom: '1px solid var(--color-canvas)' } : {}}
                       >
                         <Avatar url={f.avatar_url} nickname={f.nickname} online={f.is_online} />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-0.5">
-                            <span className="text-sm font-semibold" style={{ color: '#1A1A1A' }}>
+                            <span className="text-sm font-semibold text-text-1">
                               {f.nickname}
                             </span>
                             <span
@@ -264,13 +255,13 @@ export default async function FriendPage() {
                             </span>
                           </div>
                           {f.last_message && (
-                            <p className="text-xs truncate" style={{ color: '#999999' }}>
+                            <p className="text-xs truncate text-text-3">
                               {f.last_message}
                             </p>
                           )}
                         </div>
                         <div className="flex-shrink-0 text-right">
-                          <span className="text-[11px] font-medium" style={{ color: '#C4973A' }}>
+                          <span className="text-[11px] font-medium text-amber">
                             D+{f.days_together}
                           </span>
                         </div>
@@ -285,8 +276,7 @@ export default async function FriendPage() {
 
       {/* 친구 추가 FAB */}
       <button
-        className="fixed bottom-24 right-5 w-14 h-14 rounded-full flex items-center justify-center shadow-lg z-40"
-        style={{ backgroundColor: '#4A7C5F' }}
+        className="fixed bottom-24 right-5 w-14 h-14 rounded-full flex items-center justify-center shadow-lg z-40 bg-primary"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
           <path d="M16 11C17.6569 11 19 9.65685 19 8C19 6.34315 17.6569 5 16 5" stroke="white" strokeWidth="2" strokeLinecap="round"/>

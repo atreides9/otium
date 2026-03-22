@@ -1,31 +1,45 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* Background */
-  --color-base: #F0EDE8;
-  --color-card: #FFFFFF;
-  --color-dark-card: #3D3730;
-
-  /* Brand */
-  --color-primary: #4A7C5F;
-  --color-gold: #C4973A;
-  --color-accent-orange: #D4824A;
-  --color-accent-blue: #6B8FB5;
-
-  /* Text */
-  --color-foreground: #1A1A1A;
-  --color-sub: #666666;
-  --color-muted: #999999;
-
-  /* Border */
+  --color-canvas: #F0EDE8;
+  --color-surface: #FFFFFF;
+  --color-surface-dark: #3D3730;
   --color-border: #E5E1DC;
+  --color-hover: #F8F5F0;
+
+  --color-primary: #4A7C5F;
+  --color-primary-dark: #3A6A50;
+  --color-primary-tint: #EEF5F1;
+  --color-amber: #C4973A;
+  --color-terracotta: #D4824A;
+  --color-slate: #6B8FB5;
+
+  --color-text-1: #1A1A1A;
+  --color-text-2: #666666;
+  --color-text-3: #999999;
+  --color-text-4: #BBBBBB;
+
+  --color-danger: #EF4444;
+  --color-danger-tint: #FDECEA;
+  --color-warning-tint: #FDF8EC;
+  --color-warning-border: #EDD98A;
+
+  --friendship-sprout-bg: #FFF3E8;
+  --friendship-sprout-text: #D4824A;
+  --friendship-sprout-badge: #FFEDC2;
+  --friendship-tree-bg: #E8F0F8;
+  --friendship-tree-text: #6B8FB5;
+  --friendship-tree-badge: #C8DCF0;
+  --friendship-forest-bg: #E8F4EE;
+  --friendship-forest-text: #4A7C5F;
+  --friendship-forest-badge: #C2DFD0;
 
   /* Font */
   --font-pretendard: 'Pretendard', sans-serif;
 }
 
 body {
-  background-color: #F0EDE8;
-  color: #1A1A1A;
+  background-color: var(--color-canvas);
+  color: var(--color-text-1);
   font-family: 'Pretendard', sans-serif;
 }

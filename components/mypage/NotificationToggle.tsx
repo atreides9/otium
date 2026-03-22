@@ -9,7 +9,7 @@ export default function NotificationToggle() {
     <button
       onClick={() => setEnabled((v) => !v)}
       className="relative inline-flex h-6 w-11 flex-shrink-0 rounded-full transition-colors duration-200"
-      style={{ backgroundColor: enabled ? '#4A7C5F' : '#E5E1DC' }}
+      style={{ backgroundColor: enabled ? 'var(--color-primary)' : 'var(--color-border)' }}
       aria-pressed={enabled}
     >
       <span

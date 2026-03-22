@@ -88,17 +88,17 @@ export default function SocialPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F0EDE8] px-5 py-6 space-y-4">
+    <div className="min-h-screen bg-canvas px-5 py-6 space-y-4">
       {/* 헤더 */}
-      <h1 className="text-xl font-bold text-[#1A1A1A]">소셜 계정 연결</h1>
+      <h1 className="text-xl font-bold text-text-1">소셜 계정 연결</h1>
 
       {/* 연결된 계정 수 카드 */}
       <div className="bg-white rounded-2xl p-5 flex items-center justify-between">
         <div>
-          <p className="text-sm text-[#666666]">연결된 계정</p>
-          <p className="text-base text-[#1A1A1A] mt-0.5">소셜 계정을 연결하여 편리하게 로그인하세요</p>
+          <p className="text-sm text-text-2">연결된 계정</p>
+          <p className="text-base text-text-1 mt-0.5">소셜 계정을 연결하여 편리하게 로그인하세요</p>
         </div>
-        <span className="text-3xl font-bold text-[#4A7C5F]">{connectedCount}</span>
+        <span className="text-3xl font-bold text-primary">{connectedCount}</span>
       </div>
 
       {/* 소셜 계정 카드 목록 */}
@@ -109,11 +109,11 @@ export default function SocialPage() {
               <div className="flex items-center gap-3">
                 {PROVIDER_ICONS[account.provider]}
                 <div>
-                  <p className="text-[15px] font-semibold text-[#1A1A1A]">{account.name}</p>
+                  <p className="text-[15px] font-semibold text-text-1">{account.name}</p>
                   {account.connected && account.connectedAt ? (
-                    <p className="text-xs text-[#999999] mt-0.5">{account.connectedAt} 연결됨</p>
+                    <p className="text-xs text-text-3 mt-0.5">{account.connectedAt} 연결됨</p>
                   ) : (
-                    <p className="text-xs text-[#999999] mt-0.5">연결되지 않음</p>
+                    <p className="text-xs text-text-3 mt-0.5">연결되지 않음</p>
                   )}
                 </div>
               </div>
@@ -124,8 +124,8 @@ export default function SocialPage() {
                   disabled={connectedCount <= 1}
                   className={`px-4 py-1.5 rounded-lg text-sm border transition-colors ${
                     connectedCount <= 1
-                      ? 'border-[#E5E1DC] text-[#CCCCCC] cursor-not-allowed'
-                      : 'border-[#999999] text-[#666666] hover:bg-gray-50'
+                      ? 'border-border text-[#CCCCCC] cursor-not-allowed'
+                      : 'border-text-3 text-text-2 hover:bg-gray-50'
                   }`}
                 >
                   연결 해제
@@ -133,7 +133,7 @@ export default function SocialPage() {
               ) : (
                 <button
                   onClick={() => handleConnect(account.provider)}
-                  className="px-4 py-1.5 rounded-lg text-sm bg-[#4A7C5F] text-white hover:bg-[#3d6b50] transition-colors"
+                  className="px-4 py-1.5 rounded-lg text-sm bg-primary text-white hover:bg-primary-dark transition-colors"
                 >
                   연결하기
                 </button>
@@ -145,7 +145,7 @@ export default function SocialPage() {
 
       {/* 알아두세요 카드 */}
       <div className="bg-white rounded-2xl p-5">
-        <p className="text-sm font-bold text-[#C4973A] mb-3">알아두세요</p>
+        <p className="text-sm font-bold text-amber mb-3">알아두세요</p>
         <ul className="space-y-2">
           {[
             '최소 1개의 소셜 계정이 연결되어 있어야 합니다.',
@@ -153,8 +153,8 @@ export default function SocialPage() {
             '연결된 계정의 개인정보는 오티움에 저장되지 않습니다.',
             '소셜 계정 연결 시 해당 서비스의 이용약관에 동의하게 됩니다.',
           ].map((text, i) => (
-            <li key={i} className="flex gap-2 text-sm text-[#666666]">
-              <span className="mt-1.5 w-1 h-1 rounded-full bg-[#999999] shrink-0" />
+            <li key={i} className="flex gap-2 text-sm text-text-2">
+              <span className="mt-1.5 w-1 h-1 rounded-full bg-text-3 shrink-0" />
               <span>{text}</span>
             </li>
           ))}

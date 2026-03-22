@@ -23,15 +23,15 @@ interface UserProfile {
 }
 
 const GENRE_COLORS: Record<string, { bg: string; text: string }> = {
-  소설: { bg: '#4A7C5F', text: '#FFFFFF' },
-  시: { bg: '#6B8FB5', text: '#FFFFFF' },
-  에세이: { bg: '#C4973A', text: '#FFFFFF' },
-  자기계발: { bg: '#D4824A', text: '#FFFFFF' },
-  과학: { bg: '#3D3730', text: '#FFFFFF' },
+  소설: { bg: 'var(--color-primary)', text: '#FFFFFF' },
+  시: { bg: 'var(--color-slate)', text: '#FFFFFF' },
+  에세이: { bg: 'var(--color-amber)', text: '#FFFFFF' },
+  자기계발: { bg: 'var(--color-terracotta)', text: '#FFFFFF' },
+  과학: { bg: 'var(--color-surface-dark)', text: '#FFFFFF' },
   역사: { bg: '#8B6F47', text: '#FFFFFF' },
   철학: { bg: '#7B5EA7', text: '#FFFFFF' },
   경제: { bg: '#2E7D6E', text: '#FFFFFF' },
-  기타: { bg: '#999999', text: '#FFFFFF' },
+  기타: { bg: 'var(--color-text-3)', text: '#FFFFFF' },
 }
 
 function formatDate(dateStr: string) {
@@ -78,48 +78,45 @@ export default async function HomePage() {
     hour < 12 ? '좋은 아침이에요' : hour < 18 ? '안녕하세요' : '좋은 저녁이에요'
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F0EDE8' }}>
+    <div className="min-h-screen bg-canvas">
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-14 pb-4">
         <div>
-          <p className="text-sm" style={{ color: '#999999' }}>{greeting} 👋</p>
-          <h1 className="text-xl font-bold mt-0.5" style={{ color: '#1A1A1A' }}>
+          <p className="text-sm text-text-3">{greeting} 👋</p>
+          <h1 className="text-xl font-bold mt-0.5 text-text-1">
             {profile.nickname}님
           </h1>
         </div>
         <div className="flex items-center gap-3">
           {/* Streak + XP */}
           <div
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-            style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E1DC' }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface border border-border"
           >
             <span className="text-base">🔥</span>
-            <span className="text-sm font-semibold" style={{ color: '#D4824A' }}>
+            <span className="text-sm font-semibold text-terracotta">
               {profile.streak}일
             </span>
           </div>
           <div
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-            style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E1DC' }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface border border-border"
           >
             <span className="text-base">⭐</span>
-            <span className="text-sm font-semibold" style={{ color: '#C4973A' }}>
+            <span className="text-sm font-semibold text-amber">
               {profile.xp} XP
             </span>
           </div>
           {/* Notification */}
           <button
-            className="w-10 h-10 flex items-center justify-center rounded-full"
-            style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E1DC' }}
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-surface border border-border"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
               <path
                 d="M12 22C13.1046 22 14 21.1046 14 20H10C10 21.1046 10.8954 22 12 22Z"
-                fill="#666666"
+                fill="var(--color-text-2)"
               />
               <path
                 d="M19 17H5V10C5 6.68629 7.68629 4 11 4H13C16.3137 4 19 6.68629 19 10V17Z"
-                stroke="#666666"
+                stroke="var(--color-text-2)"
                 strokeWidth="1.8"
                 strokeLinejoin="round"
               />
@@ -151,25 +148,23 @@ export default async function HomePage() {
       {/* Reading Cards */}
       <section className="mb-6">
         <div className="flex items-center justify-between px-5 mb-3">
-          <h2 className="text-base font-bold" style={{ color: '#1A1A1A' }}>
+          <h2 className="text-base font-bold text-text-1">
             읽는 중
           </h2>
-          <span className="text-sm" style={{ color: '#999999' }}>
+          <span className="text-sm text-text-3">
             {reading.length}권
           </span>
         </div>
         {reading.length === 0 ? (
           <div
-            className="mx-5 rounded-2xl p-5 text-center"
-            style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E1DC' }}
+            className="mx-5 rounded-2xl p-5 text-center bg-surface border border-border"
           >
-            <p className="text-sm" style={{ color: '#999999' }}>
+            <p className="text-sm text-text-3">
               읽고 있는 책이 없어요
             </p>
             <Link
               href="/record/add"
-              className="inline-block mt-2 text-sm font-medium"
-              style={{ color: '#4A7C5F' }}
+              className="inline-block mt-2 text-sm font-medium text-primary"
             >
               + 책 추가하기
             </Link>
@@ -179,8 +174,7 @@ export default async function HomePage() {
             {reading.map((book) => (
               <div
                 key={book.id}
-                className="flex-shrink-0 w-[160px] rounded-2xl p-4"
-                style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E1DC' }}
+                className="flex-shrink-0 w-[160px] rounded-2xl p-4 bg-surface border border-border"
               >
                 {book.cover_url ? (
                   <Image
@@ -193,35 +187,25 @@ export default async function HomePage() {
                   />
                 ) : (
                   <div
-                    className="w-14 h-20 rounded-lg mb-3 flex items-center justify-center"
-                    style={{ backgroundColor: '#F0EDE8' }}
+                    className="w-14 h-20 rounded-lg mb-3 flex items-center justify-center bg-canvas"
                   >
                     <span className="text-2xl">📖</span>
                   </div>
                 )}
-                <p
-                  className="text-xs font-semibold line-clamp-2 mb-1"
-                  style={{ color: '#1A1A1A' }}
-                >
+                <p className="text-xs font-semibold line-clamp-2 mb-1 text-text-1">
                   {book.title}
                 </p>
-                <p className="text-[11px] mb-3" style={{ color: '#999999' }}>
+                <p className="text-[11px] mb-3 text-text-3">
                   {book.author}
                 </p>
                 {/* Progress bar */}
-                <div
-                  className="w-full h-1.5 rounded-full"
-                  style={{ backgroundColor: '#F0EDE8' }}
-                >
+                <div className="w-full h-1.5 rounded-full bg-canvas">
                   <div
-                    className="h-1.5 rounded-full"
-                    style={{
-                      backgroundColor: '#4A7C5F',
-                      width: `${book.progress}%`,
-                    }}
+                    className="h-1.5 rounded-full bg-primary"
+                    style={{ width: `${book.progress}%` }}
                   />
                 </div>
-                <p className="text-[11px] mt-1 text-right" style={{ color: '#4A7C5F' }}>
+                <p className="text-[11px] mt-1 text-right text-primary">
                   {book.progress}%
                 </p>
               </div>
@@ -234,10 +218,10 @@ export default async function HomePage() {
       {done.length > 0 && (
         <section className="mb-6">
           <div className="flex items-center justify-between px-5 mb-3">
-            <h2 className="text-base font-bold" style={{ color: '#1A1A1A' }}>
+            <h2 className="text-base font-bold text-text-1">
               완독
             </h2>
-            <span className="text-sm" style={{ color: '#999999' }}>
+            <span className="text-sm text-text-3">
               {done.length}권
             </span>
           </div>
@@ -245,8 +229,7 @@ export default async function HomePage() {
             {done.slice(0, 10).map((book) => (
               <div
                 key={book.id}
-                className="flex-shrink-0 w-[120px] rounded-2xl p-3"
-                style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E1DC' }}
+                className="flex-shrink-0 w-[120px] rounded-2xl p-3 bg-surface border border-border"
               >
                 {book.cover_url ? (
                   <Image
@@ -259,16 +242,12 @@ export default async function HomePage() {
                   />
                 ) : (
                   <div
-                    className="w-12 h-[68px] rounded-lg mb-2 flex items-center justify-center"
-                    style={{ backgroundColor: '#F0EDE8' }}
+                    className="w-12 h-[68px] rounded-lg mb-2 flex items-center justify-center bg-canvas"
                   >
                     <span className="text-xl">✅</span>
                   </div>
                 )}
-                <p
-                  className="text-[11px] font-semibold line-clamp-2"
-                  style={{ color: '#1A1A1A' }}
-                >
+                <p className="text-[11px] font-semibold line-clamp-2 text-text-1">
                   {book.title}
                 </p>
               </div>
@@ -280,15 +259,14 @@ export default async function HomePage() {
       {/* Recent Done List */}
       {recentDone.length > 0 && (
         <section className="px-5 mb-6">
-          <h2 className="text-base font-bold mb-3" style={{ color: '#1A1A1A' }}>
+          <h2 className="text-base font-bold mb-3 text-text-1">
             최근 완독 기록
           </h2>
           <div className="flex flex-col gap-3">
             {recentDone.map((book) => (
               <div
                 key={book.id}
-                className="flex items-center gap-3 p-4 rounded-2xl"
-                style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E1DC' }}
+                className="flex items-center gap-3 p-4 rounded-2xl bg-surface border border-border"
               >
                 {book.cover_url ? (
                   <Image
@@ -301,27 +279,20 @@ export default async function HomePage() {
                   />
                 ) : (
                   <div
-                    className="w-12 h-[68px] rounded-lg flex-shrink-0 flex items-center justify-center"
-                    style={{ backgroundColor: '#F0EDE8' }}
+                    className="w-12 h-[68px] rounded-lg flex-shrink-0 flex items-center justify-center bg-canvas"
                   >
                     <span className="text-xl">📚</span>
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <p
-                    className="text-sm font-semibold truncate"
-                    style={{ color: '#1A1A1A' }}
-                  >
+                  <p className="text-sm font-semibold truncate text-text-1">
                     {book.title}
                   </p>
-                  <p className="text-xs mt-0.5" style={{ color: '#999999' }}>
+                  <p className="text-xs mt-0.5 text-text-3">
                     {book.finished_at ? formatDate(book.finished_at) : ''}
                   </p>
                   {book.one_line && (
-                    <p
-                      className="text-xs mt-1.5 line-clamp-2"
-                      style={{ color: '#666666' }}
-                    >
+                    <p className="text-xs mt-1.5 line-clamp-2 text-text-2">
                       &ldquo;{book.one_line}&rdquo;
                     </p>
                   )}
@@ -335,8 +306,7 @@ export default async function HomePage() {
       {/* FAB */}
       <Link
         href="/record/add"
-        className="fixed bottom-24 right-5 w-14 h-14 rounded-full flex items-center justify-center shadow-lg z-40"
-        style={{ backgroundColor: '#4A7C5F' }}
+        className="fixed bottom-24 right-5 w-14 h-14 rounded-full flex items-center justify-center shadow-lg z-40 bg-primary"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
           <path

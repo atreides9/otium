@@ -41,10 +41,10 @@ function getXpSegments(xp: number) {
   const progress = Math.min((xp % levelCap) / levelCap, 1)
   // 멀티컬러 세그먼트: green 40% / orange 25% / blue 25% / gray 나머지
   const segments = [
-    { color: '#4A7C5F', share: 0.4 },
-    { color: '#D4824A', share: 0.25 },
-    { color: '#6B8FB5', share: 0.25 },
-    { color: '#E5E1DC', share: 0.1 },
+    { color: 'var(--color-primary)', share: 0.4 },
+    { color: 'var(--color-terracotta)', share: 0.25 },
+    { color: 'var(--color-slate)', share: 0.25 },
+    { color: 'var(--color-border)', share: 0.1 },
   ]
   let filled = 0
   return segments.map((seg) => {
@@ -103,30 +103,29 @@ export default async function MyPage() {
         ]
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F0EDE8' }}>
+    <div className="min-h-screen bg-canvas">
       {/* Header */}
       <div className="px-5 pt-14 pb-4">
-        <h1 className="text-xl font-bold" style={{ color: '#1A1A1A' }}>
+        <h1 className="text-xl font-bold text-text-1">
           마이페이지
         </h1>
       </div>
 
       {/* Profile Card */}
-      <div className="mx-5 mb-4 rounded-2xl p-5" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E1DC' }}>
+      <div className="mx-5 mb-4 rounded-2xl p-5 bg-surface border border-border">
         <div className="flex items-center gap-4 mb-4">
           {/* Avatar */}
           <div
-            className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0"
-            style={{ backgroundColor: '#4A7C5F' }}
+            className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 bg-primary"
           >
             <span className="text-2xl font-bold text-white">{getInitial(profile.nickname)}</span>
           </div>
           {/* Info */}
           <div className="flex-1 min-w-0">
-            <p className="text-base font-bold" style={{ color: '#1A1A1A' }}>
+            <p className="text-base font-bold text-text-1">
               {profile.nickname}
             </p>
-            <p className="text-xs mt-0.5" style={{ color: '#999999' }}>
+            <p className="text-xs mt-0.5 text-text-3">
               Lv.{level} · {profile.xp} XP
             </p>
           </div>
@@ -134,7 +133,7 @@ export default async function MyPage() {
           <Link
             href="/mypage/nickname"
             className="px-3 py-1.5 rounded-lg text-xs font-medium"
-            style={{ border: '1px solid #4A7C5F', color: '#4A7C5F' }}
+            style={{ border: '1px solid var(--color-primary)', color: 'var(--color-primary)' }}
           >
             프로필 수정
           </Link>
@@ -142,12 +141,12 @@ export default async function MyPage() {
 
         {/* XP gauge bar */}
         <div className="mb-1.5">
-          <div className="flex w-full h-2.5 rounded-full overflow-hidden" style={{ backgroundColor: '#F0EDE8' }}>
+          <div className="flex w-full h-2.5 rounded-full overflow-hidden bg-canvas">
             {xpSegments.map((seg, i) => (
               <div
                 key={i}
                 className="h-full"
-                style={{ width: `${seg.width}%`, backgroundColor: '#F0EDE8', position: 'relative', overflow: 'hidden' }}
+                style={{ width: `${seg.width}%`, backgroundColor: 'var(--color-canvas)', position: 'relative', overflow: 'hidden' }}
               >
                 <div
                   className="h-full absolute left-0 top-0 transition-all duration-500"
@@ -158,10 +157,10 @@ export default async function MyPage() {
           </div>
         </div>
         <div className="flex justify-between">
-          <span className="text-[11px]" style={{ color: '#999999' }}>
+          <span className="text-[11px] text-text-3">
             Lv.{level}
           </span>
-          <span className="text-[11px]" style={{ color: '#999999' }}>
+          <span className="text-[11px] text-text-3">
             {xpInLevel} / 500 XP
           </span>
         </div>
@@ -170,10 +169,10 @@ export default async function MyPage() {
       {/* Badges Section */}
       <div className="mx-5 mb-4">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-base font-bold" style={{ color: '#1A1A1A' }}>
+          <h2 className="text-base font-bold text-text-1">
             획득한 배지
           </h2>
-          <Link href="/mypage/badges" className="text-sm" style={{ color: '#4A7C5F' }}>
+          <Link href="/mypage/badges" className="text-sm text-primary">
             전체
           </Link>
         </div>
@@ -181,14 +180,13 @@ export default async function MyPage() {
           {displayBadges.slice(0, 3).map((ub) => (
             <div
               key={ub.id}
-              className="rounded-2xl p-3 flex flex-col items-center gap-1"
-              style={{ backgroundColor: '#3D3730' }}
+              className="rounded-2xl p-3 flex flex-col items-center gap-1 bg-surface-dark"
             >
               <span className="text-3xl mt-1">{ub.badge.emoji || BADGE_ICON_MAP[ub.badge.name] || '🏅'}</span>
-              <p className="text-xs font-semibold text-center" style={{ color: '#FFFFFF' }}>
+              <p className="text-xs font-semibold text-center text-white">
                 {ub.badge.name}
               </p>
-              <p className="text-[10px]" style={{ color: '#999999' }}>
+              <p className="text-[10px] text-text-3">
                 {formatBadgeDate(ub.earned_at)}
               </p>
             </div>
@@ -199,8 +197,8 @@ export default async function MyPage() {
       {/* Settings Groups */}
       <div className="px-5 flex flex-col gap-3 mb-6">
         {/* 계정 */}
-        <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E1DC' }}>
-          <p className="px-4 pt-3 pb-1 text-xs font-semibold" style={{ color: '#999999' }}>
+        <div className="rounded-2xl overflow-hidden bg-surface border border-border">
+          <p className="px-4 pt-3 pb-1 text-xs font-semibold text-text-3">
             계정
           </p>
           <SettingRow label="닉네임 수정" href="/mypage/nickname" />
@@ -208,8 +206,8 @@ export default async function MyPage() {
         </div>
 
         {/* 친구 & 채팅 */}
-        <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E1DC' }}>
-          <p className="px-4 pt-3 pb-1 text-xs font-semibold" style={{ color: '#999999' }}>
+        <div className="rounded-2xl overflow-hidden bg-surface border border-border">
+          <p className="px-4 pt-3 pb-1 text-xs font-semibold text-text-3">
             친구 &amp; 채팅
           </p>
           <SettingRow label="친구 관리" href="/friend/manage" />
@@ -217,15 +215,15 @@ export default async function MyPage() {
         </div>
 
         {/* 알림 & 권한 */}
-        <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E1DC' }}>
-          <p className="px-4 pt-3 pb-1 text-xs font-semibold" style={{ color: '#999999' }}>
+        <div className="rounded-2xl overflow-hidden bg-surface border border-border">
+          <p className="px-4 pt-3 pb-1 text-xs font-semibold text-text-3">
             알림 &amp; 권한
           </p>
           <div
             className="flex items-center justify-between px-4 py-3.5"
-            style={{ borderBottom: '1px solid #F0EDE8' }}
+            style={{ borderBottom: '1px solid var(--color-canvas)' }}
           >
-            <span className="text-sm" style={{ color: '#1A1A1A' }}>
+            <span className="text-sm text-text-1">
               알림 설정
             </span>
             <NotificationToggle />
@@ -234,17 +232,17 @@ export default async function MyPage() {
         </div>
 
         {/* 정보 */}
-        <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E1DC' }}>
-          <p className="px-4 pt-3 pb-1 text-xs font-semibold" style={{ color: '#999999' }}>
+        <div className="rounded-2xl overflow-hidden bg-surface border border-border">
+          <p className="px-4 pt-3 pb-1 text-xs font-semibold text-text-3">
             정보
           </p>
           <SettingRow label="공지사항" href="/mypage/notices" />
           <SettingRow label="약관 및 정책" href="/mypage/policy" />
           <div className="flex items-center justify-between px-4 py-3.5">
-            <span className="text-sm" style={{ color: '#1A1A1A' }}>
+            <span className="text-sm text-text-1">
               앱 버전
             </span>
-            <span className="text-sm" style={{ color: '#999999' }}>
+            <span className="text-sm text-text-3">
               1.0.0
             </span>
           </div>
@@ -253,10 +251,10 @@ export default async function MyPage() {
 
       {/* Bottom Actions */}
       <div className="flex flex-col items-center gap-3 pb-10">
-        <button className="text-sm font-medium" style={{ color: '#4A7C5F' }}>
+        <button className="text-sm font-medium text-primary">
           로그아웃
         </button>
-        <button className="text-xs" style={{ color: '#999999' }}>
+        <button className="text-xs text-text-3">
           계정 삭제
         </button>
       </div>
@@ -269,15 +267,15 @@ function SettingRow({ label, href, last = false }: { label: string; href: string
     <Link
       href={href}
       className="flex items-center justify-between px-4 py-3.5"
-      style={last ? undefined : { borderBottom: '1px solid #F0EDE8' }}
+      style={last ? undefined : { borderBottom: '1px solid var(--color-canvas)' }}
     >
-      <span className="text-sm" style={{ color: '#1A1A1A' }}>
+      <span className="text-sm text-text-1">
         {label}
       </span>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
         <path
           d="M9 18L15 12L9 6"
-          stroke="#999999"
+          stroke="var(--color-text-3)"
           strokeWidth="1.8"
           strokeLinecap="round"
           strokeLinejoin="round"

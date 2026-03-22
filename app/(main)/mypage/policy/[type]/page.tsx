@@ -90,37 +90,37 @@ export default async function PolicyDetailPage({ params }: Props) {
   const content = POLICY_CONTENT[type] ?? ''
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F0EDE8' }}>
+    <div className="min-h-screen bg-canvas">
       {/* Header */}
       <div className="flex items-center gap-3 px-5 pt-14 pb-4">
         <Link href="/mypage/policy">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path
               d="M15 18L9 12L15 6"
-              stroke="#1A1A1A"
+              stroke="var(--color-text-1)"
               strokeWidth="1.8"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
           </svg>
         </Link>
-        <h1 className="text-xl font-bold" style={{ color: '#1A1A1A' }}>
+        <h1 className="text-xl font-bold text-text-1">
           {meta.title}
         </h1>
       </div>
 
       {/* Content */}
       <div className="px-5 pb-10">
-        <p className="text-xs mb-4" style={{ color: '#999999' }}>
+        <p className="text-xs mb-4 text-text-3">
           최종 업데이트: {meta.updatedAt}
         </p>
         <div
           className="rounded-2xl p-5"
-          style={{ backgroundColor: '#FFFFFF', border: '1px solid #E5E1DC' }}
+          style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
         >
           <pre
             className="text-sm whitespace-pre-wrap leading-relaxed font-sans"
-            style={{ color: '#1A1A1A' }}
+            style={{ color: 'var(--color-text-1)' }}
           >
             {content}
           </pre>

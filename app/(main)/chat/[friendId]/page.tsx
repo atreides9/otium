@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { RealtimeChannel } from '@supabase/supabase-js'
+import { CHAT_LIMITS, getLevelFromDays, isChatWindowOpen, isToday } from '@/lib/chat-limits'
 
 type Level = 'sprout' | 'tree' | 'forest'
 
@@ -26,6 +27,8 @@ interface FriendshipInfo {
   level: Level
   days_together: number
   message_count_today: number
+  quote_count_today: number
+  first_message_today: string | null
 }
 
 const LEVEL_CONFIG: Record<Level, {
@@ -39,31 +42,31 @@ const LEVEL_CONFIG: Record<Level, {
   sprout: {
     label: '새싹',
     icon: '🌱',
-    bannerBg: '#FFF3E8',
-    bannerText: '#D4824A',
-    badgeBg: '#FFE0C2',
-    badgeText: '#D4824A',
+    bannerBg: 'var(--friendship-sprout-bg)',
+    bannerText: 'var(--friendship-sprout-text)',
+    badgeBg: 'var(--friendship-sprout-badge)',
+    badgeText: 'var(--friendship-sprout-text)',
   },
   tree: {
     label: '나무',
     icon: '🌳',
-    bannerBg: '#E8F0F8',
-    bannerText: '#6B8FB5',
-    badgeBg: '#C8DCF0',
-    badgeText: '#4A6F9A',
+    bannerBg: 'var(--friendship-tree-bg)',
+    bannerText: 'var(--friendship-tree-text)',
+    badgeBg: 'var(--friendship-tree-badge)',
+    badgeText: 'var(--friendship-tree-text)',
   },
   forest: {
     label: '숲',
     icon: '🌲',
-    bannerBg: '#E8F4EE',
-    bannerText: '#4A7C5F',
-    badgeBg: '#C2DFD0',
-    badgeText: '#3A6A50',
+    bannerBg: 'var(--friendship-forest-bg)',
+    bannerText: 'var(--friendship-forest-text)',
+    badgeBg: 'var(--friendship-forest-badge)',
+    badgeText: 'var(--color-primary-dark)',
   },
 }
 
-const MAX_CHARS_TREE = 30
-const MAX_MESSAGES_PER_DAY_TREE = 5
+const MAX_CHARS_TREE = CHAT_LIMITS.tree.maxChars
+const MAX_MESSAGES_PER_DAY_TREE = CHAT_LIMITS.tree.messagesPerDay
 
 function formatTime(iso: string) {
   const d = new Date(iso)
@@ -83,6 +86,8 @@ export default function ChatPage() {
     level: 'sprout',
     days_together: 0,
     message_count_today: 0,
+    quote_count_today: 0,
+    first_message_today: null,
   })
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
@@ -127,10 +132,21 @@ export default function ChatPage() {
       if (friendshipRes.data) {
         const createdAt = new Date(friendshipRes.data.created_at)
         const days = Math.floor((Date.now() - createdAt.getTime()) / 86400000)
+        const derivedLevel = getLevelFromDays(days)
+
+        const loadedMessages = (msgRes.data ?? []) as Message[]
+        const myTodayMsgs = loadedMessages.filter(
+          (m) => m.sender_id === user.id && isToday(m.created_at)
+        )
+        const quoteCountToday = myTodayMsgs.filter((m) => m.type === 'quote').length
+        const firstMsgToday = myTodayMsgs[0]?.created_at ?? null
+
         setFriendship({
-          level: (friendshipRes.data.level as Level) ?? 'sprout',
+          level: derivedLevel,
           days_together: days,
           message_count_today: friendshipRes.data.message_count_today ?? 0,
+          quote_count_today: quoteCountToday,
+          first_message_today: firstMsgToday,
         })
       }
 
@@ -203,27 +219,35 @@ export default function ChatPage() {
   const handleSend = () => {
     if (level === 'tree' && input.length > MAX_CHARS_TREE) return
     if (level === 'tree' && friendship.message_count_today >= MAX_MESSAGES_PER_DAY_TREE) return
+    if (level === 'tree' && !isChatWindowOpen(friendship.first_message_today, CHAT_LIMITS.tree.chatWindowHours)) return
     sendMessage(input)
   }
 
   const handleQuoteSend = () => {
+    if (level === 'sprout' && friendship.quote_count_today >= CHAT_LIMITS.sprout.quotesPerDay) {
+      alert(`오늘은 구절을 ${CHAT_LIMITS.sprout.quotesPerDay}개 모두 공유했어요`)
+      return
+    }
     // 실제 구절 선택 UI 연동 시 교체
     sendMessage('📖 구절을 공유했어요', 'quote')
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F0EDE8' }}>
-        <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: '#4A7C5F', borderTopColor: 'transparent' }} />
+      <div className="min-h-screen flex items-center justify-center bg-canvas">
+        <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent' }} />
       </div>
     )
   }
 
   const remainingMsgs = MAX_MESSAGES_PER_DAY_TREE - friendship.message_count_today
-  const isTreeLimitReached = level === 'tree' && friendship.message_count_today >= MAX_MESSAGES_PER_DAY_TREE
+  const isTreeMsgLimitReached = level === 'tree' && friendship.message_count_today >= MAX_MESSAGES_PER_DAY_TREE
+  const isTreeWindowClosed = level === 'tree' && !isChatWindowOpen(friendship.first_message_today, CHAT_LIMITS.tree.chatWindowHours)
+  const isTreeLimitReached = isTreeMsgLimitReached || isTreeWindowClosed
+  const isSproutQuoteLimitReached = level === 'sprout' && friendship.quote_count_today >= CHAT_LIMITS.sprout.quotesPerDay
 
   return (
-    <div className="flex flex-col h-screen" style={{ backgroundColor: '#F0EDE8' }}>
+    <div className="flex flex-col h-screen bg-canvas">
       {/* 상단 배너 */}
       <div
         className="flex-shrink-0 pt-14 pb-3 px-5"
@@ -241,10 +265,10 @@ export default function ChatPage() {
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm"
               style={{
-                backgroundColor: friend?.avatar_url ? undefined : '#E5E1DC',
+                backgroundColor: friend?.avatar_url ? undefined : 'var(--color-border)',
                 backgroundImage: friend?.avatar_url ? `url(${friend.avatar_url})` : undefined,
                 backgroundSize: 'cover',
-                color: '#666666',
+                color: 'var(--color-text-2)',
               }}
             >
               {!friend?.avatar_url && (friend?.nickname[0] ?? '?')}
@@ -252,7 +276,7 @@ export default function ChatPage() {
             {friend?.is_online && (
               <span
                 className="absolute bottom-0 right-0 rounded-full border-2"
-                style={{ width: 10, height: 10, backgroundColor: '#4A7C5F', borderColor: cfg.bannerBg }}
+                style={{ width: 10, height: 10, backgroundColor: 'var(--color-primary)', borderColor: cfg.bannerBg }}
               />
             )}
           </div>
@@ -278,10 +302,11 @@ export default function ChatPage() {
         {/* 단계별 안내 */}
         {level === 'sprout' && (
           <div
-            className="mt-3 rounded-xl px-3 py-2 text-[11px]"
+            className="mt-3 rounded-xl px-3 py-2 text-[11px] flex items-center justify-between"
             style={{ backgroundColor: cfg.badgeBg, color: cfg.badgeText }}
           >
-            🌱 새싹 단계에서는 구절만 공유할 수 있어요
+            <span>🌱 새싹 단계에서는 구절만 공유할 수 있어요</span>
+            <span>{friendship.quote_count_today}/{CHAT_LIMITS.sprout.quotesPerDay}개</span>
           </div>
         )}
         {level === 'tree' && (
@@ -290,7 +315,8 @@ export default function ChatPage() {
             style={{ backgroundColor: cfg.badgeBg, color: cfg.badgeText }}
           >
             <span>🌳 오늘 메시지 {friendship.message_count_today}/{MAX_MESSAGES_PER_DAY_TREE}회 · 30자 제한</span>
-            {isTreeLimitReached && <span className="font-semibold">내일 다시 대화해요</span>}
+            {isTreeWindowClosed && <span className="font-semibold">채팅 시간(2h) 초과</span>}
+            {isTreeMsgLimitReached && !isTreeWindowClosed && <span className="font-semibold">내일 다시 대화해요</span>}
           </div>
         )}
       </div>
@@ -300,7 +326,7 @@ export default function ChatPage() {
         {messages.length === 0 && (
           <div className="flex-1 flex flex-col items-center justify-center gap-2 py-16">
             <span className="text-4xl">{cfg.icon}</span>
-            <p className="text-sm" style={{ color: '#999999' }}>
+            <p className="text-sm text-text-3">
               {level === 'sprout'
                 ? '좋아하는 구절을 공유해보세요'
                 : level === 'tree'
@@ -319,10 +345,10 @@ export default function ChatPage() {
                   <div
                     className="px-4 py-3 rounded-2xl text-sm"
                     style={{
-                      backgroundColor: isMe ? '#4A7C5F' : '#FFFFFF',
-                      color: isMe ? '#FFFFFF' : '#1A1A1A',
-                      border: isMe ? 'none' : '1px solid #E5E1DC',
-                      borderLeft: `3px solid ${isMe ? '#C4973A' : '#C4973A'}`,
+                      backgroundColor: isMe ? 'var(--color-primary)' : 'var(--color-surface)',
+                      color: isMe ? '#FFFFFF' : 'var(--color-text-1)',
+                      border: isMe ? 'none' : '1px solid var(--color-border)',
+                      borderLeft: `3px solid var(--color-amber)`,
                     }}
                   >
                     <p className="text-[10px] mb-1 opacity-70">구절 공유</p>
@@ -332,9 +358,9 @@ export default function ChatPage() {
                   <div
                     className="px-4 py-2.5 rounded-2xl text-sm"
                     style={{
-                      backgroundColor: isMe ? '#4A7C5F' : '#FFFFFF',
-                      color: isMe ? '#FFFFFF' : '#1A1A1A',
-                      border: isMe ? 'none' : '1px solid #E5E1DC',
+                      backgroundColor: isMe ? 'var(--color-primary)' : 'var(--color-surface)',
+                      color: isMe ? '#FFFFFF' : 'var(--color-text-1)',
+                      border: isMe ? 'none' : '1px solid var(--color-border)',
                       borderRadius: isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
                     }}
                   >
@@ -343,7 +369,7 @@ export default function ChatPage() {
                 )}
                 <p
                   className={`text-[10px] mt-1 ${isMe ? 'text-right' : 'text-left'}`}
-                  style={{ color: '#BBBBBB' }}
+                  style={{ color: 'var(--color-text-4)' }}
                 >
                   {formatTime(msg.created_at)}
                 </p>
@@ -357,14 +383,15 @@ export default function ChatPage() {
       {/* 입력 영역 */}
       <div
         className="flex-shrink-0 px-5 py-3 pb-safe"
-        style={{ backgroundColor: '#FFFFFF', borderTop: '1px solid #E5E1DC' }}
+        style={{ backgroundColor: 'var(--color-surface)', borderTop: '1px solid var(--color-border)' }}
       >
         {level === 'sprout' ? (
           /* 새싹: 구절 선택 버튼만 */
           <button
             onClick={handleQuoteSend}
-            className="w-full py-3.5 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2"
-            style={{ backgroundColor: '#4A7C5F', color: '#FFFFFF' }}
+            disabled={isSproutQuoteLimitReached}
+            className="w-full py-3.5 rounded-2xl font-semibold text-sm flex items-center justify-center gap-2 transition-opacity"
+            style={{ backgroundColor: 'var(--color-primary)', color: '#FFFFFF', opacity: isSproutQuoteLimitReached ? 0.4 : 1 }}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
               <path d="M3 6H21M3 12H15M3 18H9" stroke="white" strokeWidth="2" strokeLinecap="round"/>
@@ -395,8 +422,8 @@ export default function ChatPage() {
                 rows={1}
                 className="w-full resize-none rounded-2xl px-4 py-3 text-sm outline-none"
                 style={{
-                  backgroundColor: '#F0EDE8',
-                  color: '#1A1A1A',
+                  backgroundColor: 'var(--color-canvas)',
+                  color: 'var(--color-text-1)',
                   maxHeight: 100,
                   lineHeight: '1.4',
                 }}
@@ -404,7 +431,7 @@ export default function ChatPage() {
               {level === 'tree' && (
                 <span
                   className="absolute bottom-2.5 right-3 text-[11px]"
-                  style={{ color: input.length >= MAX_CHARS_TREE ? '#D4824A' : '#BBBBBB' }}
+                  style={{ color: input.length >= MAX_CHARS_TREE ? 'var(--color-terracotta)' : 'var(--color-text-4)' }}
                 >
                   {input.length}/{MAX_CHARS_TREE}
                 </span>
@@ -415,7 +442,7 @@ export default function ChatPage() {
               disabled={!input.trim() || isTreeLimitReached}
               className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 transition-opacity"
               style={{
-                backgroundColor: '#4A7C5F',
+                backgroundColor: 'var(--color-primary)',
                 opacity: !input.trim() || isTreeLimitReached ? 0.4 : 1,
               }}
             >
@@ -428,7 +455,7 @@ export default function ChatPage() {
         )}
 
         {level === 'tree' && !isTreeLimitReached && (
-          <p className="text-[11px] text-center mt-2" style={{ color: '#BBBBBB' }}>
+          <p className="text-[11px] text-center mt-2 text-text-4">
             오늘 {remainingMsgs}회 더 보낼 수 있어요
           </p>
         )}

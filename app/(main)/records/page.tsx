@@ -30,10 +30,10 @@ interface Author {
 // ─── 더미 데이터 ──────────────────────────────────────────
 const GENRE_COLOR: Record<Genre, string> = {
   소설: '#D4C5A9',
-  에세이: '#6B8FB5',
-  인문: '#4A7C5F',
-  경제: '#C4973A',
-  과학: '#D4824A',
+  에세이: 'var(--color-slate)',
+  인문: 'var(--color-primary)',
+  경제: 'var(--color-amber)',
+  과학: 'var(--color-terracotta)',
   자기계발: '#9B8BB4',
 }
 
@@ -106,8 +106,8 @@ function MonthChips({
           onClick={() => onChange(m)}
           className={`flex-shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
             selected === m
-              ? 'bg-[#4A7C5F] text-white'
-              : 'bg-white text-[#666666] border border-[#E5E1DC]'
+              ? 'bg-primary text-white'
+              : 'bg-surface text-text-2 border border-border'
           }`}
         >
           {m}월
@@ -132,7 +132,7 @@ function CustomBarLabel({ x = 0, y = 0, width = 0, height = 0, value = '' }: Cus
     <text
       x={cx}
       y={cy}
-      fill="#1A1A1A"
+      fill="var(--color-text-1)"
       fontSize={11}
       fontFamily="Pretendard, sans-serif"
       textAnchor="middle"
@@ -153,8 +153,8 @@ function FinishedBooksTab() {
   return (
     <div className="flex flex-col gap-5 pb-24">
       <div className="px-5">
-        <p className="text-[#666666] text-sm">
-          {selectedMonth}월 완독 <span className="text-[#1A1A1A] font-semibold">{books.length}권</span>
+        <p className="text-text-2 text-sm">
+          {selectedMonth}월 완독 <span className="text-text-1 font-semibold">{books.length}권</span>
         </p>
       </div>
 
@@ -165,7 +165,7 @@ function FinishedBooksTab() {
               <BarChart data={chartData} margin={{ top: 16, right: 8, left: -28, bottom: 8 }}>
                 <XAxis dataKey="title" hide />
                 <YAxis
-                  tick={{ fontSize: 10, fill: '#999999', fontFamily: 'Pretendard, sans-serif' }}
+                  tick={{ fontSize: 10, fill: 'var(--color-text-3)', fontFamily: 'Pretendard, sans-serif' }}
                   tickLine={false}
                   axisLine={false}
                 />
@@ -173,7 +173,7 @@ function FinishedBooksTab() {
                   cursor={{ fill: 'rgba(0,0,0,0.04)' }}
                   contentStyle={{
                     borderRadius: 12,
-                    border: '1px solid #E5E1DC',
+                    border: '1px solid var(--color-border)',
                     fontSize: 12,
                     fontFamily: 'Pretendard, sans-serif',
                   }}
@@ -192,7 +192,7 @@ function FinishedBooksTab() {
         <div className="px-5">
           <div className="bg-white rounded-2xl p-8 flex flex-col items-center gap-2">
             <span className="text-3xl">📚</span>
-            <p className="text-[#999999] text-sm">{selectedMonth}월에 완독한 책이 없어요</p>
+            <p className="text-text-3 text-sm">{selectedMonth}월에 완독한 책이 없어요</p>
           </div>
         </div>
       )}
@@ -202,7 +202,7 @@ function FinishedBooksTab() {
         {(Object.entries(GENRE_COLOR) as [Genre, string][]).map(([genre, color]) => (
           <div key={genre} className="flex items-center gap-1.5">
             <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
-            <span className="text-xs text-[#666666]">{genre}</span>
+            <span className="text-xs text-text-2">{genre}</span>
           </div>
         ))}
       </div>
@@ -247,7 +247,7 @@ function ReadingMapTab() {
                 textAnchor="middle"
                 dominantBaseline="middle"
                 fontSize={g.r > 50 ? 5 : g.r > 35 ? 4 : 3.5}
-                fill={g.genre === '에세이' || g.genre === '인문' ? '#ffffff' : '#1A1A1A'}
+                fill={g.genre === '에세이' || g.genre === '인문' ? '#ffffff' : 'var(--color-text-1)'}
                 fontFamily="Pretendard, sans-serif"
                 fontWeight="600"
               >
@@ -259,7 +259,7 @@ function ReadingMapTab() {
                 textAnchor="middle"
                 dominantBaseline="middle"
                 fontSize={g.r > 50 ? 4 : 3}
-                fill={g.genre === '에세이' || g.genre === '인문' ? '#ffffffcc' : '#1A1A1A99'}
+                fill={g.genre === '에세이' || g.genre === '인문' ? 'rgba(255,255,255,0.8)' : 'rgba(26,26,26,0.6)'}
                 fontFamily="Pretendard, sans-serif"
               >
                 {g.count}권
@@ -270,11 +270,11 @@ function ReadingMapTab() {
       </div>
 
       {/* 레벨 카드 */}
-      <div className="rounded-2xl p-5 flex flex-col gap-4" style={{ backgroundColor: '#3D3730' }}>
+      <div className="rounded-2xl p-5 flex flex-col gap-4 bg-surface-dark">
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-[#C4973A]/20 text-[#C4973A]">
+              <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-amber/20 text-amber">
                 Lv.{level}
               </span>
             </div>
@@ -294,7 +294,7 @@ function ReadingMapTab() {
           <div className="h-2 rounded-full bg-white/10">
             <div
               className="h-full rounded-full transition-all"
-              style={{ width: `${progress}%`, backgroundColor: '#C4973A' }}
+              style={{ width: `${progress}%`, backgroundColor: 'var(--color-amber)' }}
             />
           </div>
           {level < 4 && (
@@ -311,9 +311,9 @@ function ReadingMapTab() {
 // ─── 탭3: 선호 작가 ──────────────────────────────────────
 function FavoriteAuthorsTab() {
   const rankColor = (i: number) => {
-    if (i === 0) return '#C4973A'
-    if (i === 1 || i === 2) return '#D4824A'
-    return '#999999'
+    if (i === 0) return 'var(--color-amber)'
+    if (i === 1 || i === 2) return 'var(--color-terracotta)'
+    return 'var(--color-text-3)'
   }
 
   const initials = (name: string) => name.slice(0, 1)
@@ -326,7 +326,7 @@ function FavoriteAuthorsTab() {
           <div
             key={author.name}
             className={`flex items-center gap-3 px-4 py-3.5 ${
-              i < AUTHORS.length - 1 ? 'border-b border-[#F0EDE8]' : ''
+              i < AUTHORS.length - 1 ? 'border-b border-canvas' : ''
             }`}
           >
             {/* 순위 */}
@@ -347,7 +347,7 @@ function FavoriteAuthorsTab() {
 
             {/* 정보 */}
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-[#1A1A1A] text-sm truncate">{author.name}</p>
+              <p className="font-semibold text-text-1 text-sm truncate">{author.name}</p>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <span
                   className="text-[10px] px-1.5 py-0.5 rounded-full"
@@ -366,7 +366,7 @@ function FavoriteAuthorsTab() {
               <span className="text-sm font-bold" style={{ color: rankColor(i) }}>
                 {author.count}
               </span>
-              <span className="text-xs text-[#999999]">권</span>
+              <span className="text-xs text-text-3">권</span>
             </div>
           </div>
         ))}
@@ -374,7 +374,7 @@ function FavoriteAuthorsTab() {
 
       {/* 추천 작가 */}
       <div>
-        <p className="text-[#1A1A1A] font-semibold text-sm mb-3">이 작가도 좋아할 것 같아요</p>
+        <p className="text-text-1 font-semibold text-sm mb-3">이 작가도 좋아할 것 같아요</p>
         <div className="grid grid-cols-2 gap-3">
           {RECOMMENDED_AUTHORS.map((a) => (
             <div key={a.name} className="bg-white rounded-2xl p-4 flex flex-col gap-2">
@@ -386,7 +386,7 @@ function FavoriteAuthorsTab() {
                   {a.name.slice(0, 1)}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[#1A1A1A] font-semibold text-sm truncate">{a.name}</p>
+                  <p className="text-text-1 font-semibold text-sm truncate">{a.name}</p>
                   <span
                     className="text-[10px] px-1.5 py-0.5 rounded-full"
                     style={{
@@ -398,7 +398,7 @@ function FavoriteAuthorsTab() {
                   </span>
                 </div>
               </div>
-              <p className="text-[#999999] text-xs">{a.reason}</p>
+              <p className="text-text-3 text-xs">{a.reason}</p>
             </div>
           ))}
         </div>
@@ -415,10 +415,10 @@ export default function RecordPage() {
   const [activeTab, setActiveTab] = useState<TabKey>('완독한 책')
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F0EDE8' }}>
+    <div className="min-h-screen bg-canvas">
       {/* 헤더 */}
       <div className="pt-14 pb-4 px-5">
-        <h1 className="text-xl font-bold text-[#1A1A1A]">기록</h1>
+        <h1 className="text-xl font-bold text-text-1">기록</h1>
       </div>
 
       {/* 탭 바 */}
@@ -429,8 +429,8 @@ export default function RecordPage() {
             onClick={() => setActiveTab(tab)}
             className={`flex-1 py-2 rounded-xl text-sm font-medium transition-colors ${
               activeTab === tab
-                ? 'bg-[#4A7C5F] text-white'
-                : 'bg-white text-[#666666]'
+                ? 'bg-primary text-white'
+                : 'bg-surface text-text-2'
             }`}
           >
             {tab}
