@@ -14,13 +14,12 @@ export default function LoginPage() {
   const supabase = createClient()
 
   async function handleLogin(provider: Provider) {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        scopes: 'profile_nickname profile_image',
-        redirectTo: `${location.origin}/auth/callback?next=/home`,
-      },
-    })
+    const options =
+      provider === 'google'
+        ? { redirectTo: `${location.origin}/auth/callback?next=/home` }
+        : { scopes: 'profile_nickname profile_image', redirectTo: `${location.origin}/auth/callback?next=/home` }
+
+    const { error } = await supabase.auth.signInWithOAuth({ provider, options })
     if (error) console.error(error.message)
   }
 
