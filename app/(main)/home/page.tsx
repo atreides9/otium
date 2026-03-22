@@ -2,6 +2,9 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
+import { Flame } from 'lucide-react'
+import HomeTopBar from '@/components/home/HomeTopBar'
+import SectionHeader from '@/components/shared/SectionHeader'
 
 interface BookRecord {
   id: string
@@ -22,17 +25,9 @@ interface UserProfile {
   tags: string[]
 }
 
-const GENRE_COLORS: Record<string, { bg: string; text: string }> = {
-  소설: { bg: 'var(--color-primary)', text: '#FFFFFF' },
-  시: { bg: 'var(--color-slate)', text: '#FFFFFF' },
-  에세이: { bg: 'var(--color-amber)', text: '#FFFFFF' },
-  자기계발: { bg: 'var(--color-terracotta)', text: '#FFFFFF' },
-  과학: { bg: 'var(--color-surface-dark)', text: '#FFFFFF' },
-  역사: { bg: '#8B6F47', text: '#FFFFFF' },
-  철학: { bg: '#7B5EA7', text: '#FFFFFF' },
-  경제: { bg: '#2E7D6E', text: '#FFFFFF' },
-  기타: { bg: 'var(--color-text-3)', text: '#FFFFFF' },
-}
+const SPINE_COLORS = [
+  '#4A7C59', '#8CB89A', '#C47D2E', '#8B6F47', '#7B5EA7', '#2E7D6E', '#9D8C7A',
+]
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr)
@@ -79,93 +74,57 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-canvas">
-      {/* Header */}
-      <div className="flex items-center justify-between px-5 pt-14 pb-4">
-        <div>
-          <p className="text-sm text-text-3">{greeting} 👋</p>
-          <h1 className="text-xl font-bold mt-0.5 text-text-1">
-            {profile.nickname}님
-          </h1>
-        </div>
-        <div className="flex items-center gap-3">
-          {/* Streak + XP */}
-          <div
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface border border-border"
-          >
-            <span className="text-base">🔥</span>
-            <span className="text-sm font-semibold text-terracotta">
-              {profile.streak}일
-            </span>
-          </div>
-          <div
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface border border-border"
-          >
-            <span className="text-base">⭐</span>
-            <span className="text-sm font-semibold text-amber">
-              {profile.xp} XP
-            </span>
-          </div>
-          {/* Notification */}
-          <button
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-surface border border-border"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M12 22C13.1046 22 14 21.1046 14 20H10C10 21.1046 10.8954 22 12 22Z"
-                fill="var(--color-text-2)"
-              />
-              <path
-                d="M19 17H5V10C5 6.68629 7.68629 4 11 4H13C16.3137 4 19 6.68629 19 10V17Z"
-                stroke="var(--color-text-2)"
-                strokeWidth="1.8"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        </div>
-      </div>
+      {/* 1. TopBar */}
+      <HomeTopBar greeting={greeting} nickname={profile.nickname} />
 
-      {/* Genre Tag Bar */}
-      {profile.tags.length > 0 && (
-        <div className="px-5 mb-5">
-          <div className="grid grid-cols-2 gap-2">
-            {profile.tags.map((tag) => {
-              const color = GENRE_COLORS[tag] ?? GENRE_COLORS['기타']
-              return (
-                <div
-                  key={tag}
-                  className="flex items-center justify-center py-2 rounded-2xl text-sm font-medium"
-                  style={{ backgroundColor: color.bg, color: color.text }}
-                >
-                  {tag}
-                </div>
-              )
-            })}
+      {/* 2. Streak Row */}
+      {profile.streak > 0 && (
+        <div className="px-5 mb-8 h-[44px] flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Flame size={20} fill="#FF6B35" color="#FF6B35" />
+            <span className="text-[16px] font-semibold text-[#3D3530]">
+              {profile.streak}일 연속 독서 중
+            </span>
           </div>
+          <span className="bg-[#4A7C59] text-white text-[13px] font-bold px-3 py-1.5 rounded-full">
+            +{profile.xp} XP
+          </span>
         </div>
       )}
 
-      {/* Reading Cards */}
-      <section className="mb-6">
-        <div className="flex items-center justify-between px-5 mb-3">
-          <h2 className="text-base font-bold text-text-1">
-            읽는 중
-          </h2>
-          <span className="text-sm text-text-3">
-            {reading.length}권
-          </span>
+      {/* 3. Book Stack Hero Card */}
+      <div className="px-5 mb-8">
+        <div className="bg-[#F0EBE1] rounded-2xl overflow-hidden relative h-[200px]">
+          {done.length === 0 ? (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-[14px] text-[#6B5E57] text-center">첫 번째 책을 추가해보세요</p>
+            </div>
+          ) : (
+            <div className="flex items-end justify-center gap-2 absolute bottom-5 inset-x-5">
+              {done.slice(0, 15).map((book, index) => (
+                <div
+                  key={book.id}
+                  className="flex-1 rounded-lg"
+                  style={{
+                    height: Math.min(80 + index * 16, 160),
+                    backgroundColor: SPINE_COLORS[index % SPINE_COLORS.length],
+                  }}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 4. 읽는 중 */}
+      <section className="mb-8">
+        <div className="px-5">
+          <SectionHeader title="읽는 중" rightLabel={`${reading.length}권`} />
         </div>
         {reading.length === 0 ? (
-          <div
-            className="mx-5 rounded-2xl p-5 text-center bg-surface border border-border"
-          >
-            <p className="text-sm text-text-3">
-              읽고 있는 책이 없어요
-            </p>
-            <Link
-              href="/record/add"
-              className="inline-block mt-2 text-sm font-medium text-primary"
-            >
+          <div className="mx-5 rounded-2xl p-5 text-center bg-surface border border-border">
+            <p className="text-sm text-text-3">읽고 있는 책이 없어요</p>
+            <Link href="/record/add" className="inline-block mt-2 text-sm font-medium text-primary">
               + 책 추가하기
             </Link>
           </div>
@@ -186,82 +145,30 @@ export default async function HomePage() {
                     style={{ width: 56, height: 80 }}
                   />
                 ) : (
-                  <div
-                    className="w-14 h-20 rounded-lg mb-3 flex items-center justify-center bg-canvas"
-                  >
+                  <div className="w-14 h-20 rounded-lg mb-3 flex items-center justify-center bg-canvas">
                     <span className="text-2xl">📖</span>
                   </div>
                 )}
-                <p className="text-xs font-semibold line-clamp-2 mb-1 text-text-1">
-                  {book.title}
-                </p>
-                <p className="text-[11px] mb-3 text-text-3">
-                  {book.author}
-                </p>
-                {/* Progress bar */}
+                <p className="text-xs font-semibold line-clamp-2 mb-1 text-text-1">{book.title}</p>
+                <p className="text-[11px] mb-3 text-text-3">{book.author}</p>
                 <div className="w-full h-1.5 rounded-full bg-canvas">
-                  <div
-                    className="h-1.5 rounded-full bg-primary"
-                    style={{ width: `${book.progress}%` }}
-                  />
+                  <div className="h-1.5 rounded-full bg-primary" style={{ width: `${book.progress}%` }} />
                 </div>
-                <p className="text-[11px] mt-1 text-right text-primary">
-                  {book.progress}%
-                </p>
+                <p className="text-[11px] mt-1 text-right text-primary">{book.progress}%</p>
               </div>
             ))}
           </div>
         )}
       </section>
 
-      {/* Completed Cards */}
-      {done.length > 0 && (
-        <section className="mb-6">
-          <div className="flex items-center justify-between px-5 mb-3">
-            <h2 className="text-base font-bold text-text-1">
-              완독
-            </h2>
-            <span className="text-sm text-text-3">
-              {done.length}권
-            </span>
+      {/* 5. 최근 기록 */}
+      <section className="px-5 mb-8">
+        <SectionHeader title="최근 기록" rightLabel="전체보기" rightHref="/records" />
+        {recentDone.length === 0 ? (
+          <div className="rounded-2xl p-5 text-center bg-surface border border-border">
+            <p className="text-sm text-text-3">완독한 책이 없어요</p>
           </div>
-          <div className="flex gap-3 overflow-x-auto px-5 pb-1 scrollbar-none">
-            {done.slice(0, 10).map((book) => (
-              <div
-                key={book.id}
-                className="flex-shrink-0 w-[120px] rounded-2xl p-3 bg-surface border border-border"
-              >
-                {book.cover_url ? (
-                  <Image
-                    src={book.cover_url}
-                    alt={book.title}
-                    width={48}
-                    height={68}
-                    className="rounded-lg object-cover mb-2"
-                    style={{ width: 48, height: 68 }}
-                  />
-                ) : (
-                  <div
-                    className="w-12 h-[68px] rounded-lg mb-2 flex items-center justify-center bg-canvas"
-                  >
-                    <span className="text-xl">✅</span>
-                  </div>
-                )}
-                <p className="text-[11px] font-semibold line-clamp-2 text-text-1">
-                  {book.title}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Recent Done List */}
-      {recentDone.length > 0 && (
-        <section className="px-5 mb-6">
-          <h2 className="text-base font-bold mb-3 text-text-1">
-            최근 완독 기록
-          </h2>
+        ) : (
           <div className="flex flex-col gap-3">
             {recentDone.map((book) => (
               <div
@@ -278,16 +185,12 @@ export default async function HomePage() {
                     style={{ width: 48, height: 68 }}
                   />
                 ) : (
-                  <div
-                    className="w-12 h-[68px] rounded-lg flex-shrink-0 flex items-center justify-center bg-canvas"
-                  >
+                  <div className="w-12 h-[68px] rounded-lg flex-shrink-0 flex items-center justify-center bg-canvas">
                     <span className="text-xl">📚</span>
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold truncate text-text-1">
-                    {book.title}
-                  </p>
+                  <p className="text-sm font-semibold truncate text-text-1">{book.title}</p>
                   <p className="text-xs mt-0.5 text-text-3">
                     {book.finished_at ? formatDate(book.finished_at) : ''}
                   </p>
@@ -300,21 +203,16 @@ export default async function HomePage() {
               </div>
             ))}
           </div>
-        </section>
-      )}
+        )}
+      </section>
 
-      {/* FAB */}
+      {/* 6. FAB */}
       <Link
         href="/record/add"
-        className="fixed bottom-24 right-5 w-14 h-14 rounded-full flex items-center justify-center shadow-lg z-40 bg-primary"
+        className="fixed bottom-[76px] right-5 w-[60px] h-[60px] rounded-full flex items-center justify-center shadow-lg z-40 bg-[#3D3530]"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <path
-            d="M12 5V19M5 12H19"
-            stroke="#FFFFFF"
-            strokeWidth="2.2"
-            strokeLinecap="round"
-          />
+          <path d="M12 5V19M5 12H19" stroke="#FFFFFF" strokeWidth="2.2" strokeLinecap="round" />
         </svg>
       </Link>
     </div>

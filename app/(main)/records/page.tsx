@@ -152,6 +152,9 @@ function FinishedBooksTab() {
 
   return (
     <div className="flex flex-col gap-5 pb-24">
+      {/* 월 선택 chips */}
+      <MonthChips selected={selectedMonth} onChange={setSelectedMonth} />
+
       <div className="px-5">
         <p className="text-text-2 text-sm">
           {selectedMonth}월 완독 <span className="text-text-1 font-semibold">{books.length}권</span>
@@ -206,9 +209,6 @@ function FinishedBooksTab() {
           </div>
         ))}
       </div>
-
-      {/* 월 선택 chips */}
-      <MonthChips selected={selectedMonth} onChange={setSelectedMonth} />
     </div>
   )
 }
@@ -427,10 +427,10 @@ export default function RecordPage() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`flex-1 py-2 rounded-xl text-sm font-medium transition-colors ${
+            className={`flex-1 h-[40px] rounded-xl text-sm font-medium transition-colors ${
               activeTab === tab
-                ? 'bg-primary text-white'
-                : 'bg-surface text-text-2'
+                ? 'bg-[#4A7C59] text-white'
+                : 'bg-[#EDE8E1] text-[#3D3530]'
             }`}
           >
             {tab}

@@ -1,5 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { Search } from 'lucide-react'
+import SectionHeader from '@/components/shared/SectionHeader'
+import MatchBadge from '@/components/shared/MatchBadge'
+import GenreTag from '@/components/shared/GenreTag'
 
 interface UserSuggestion {
   id: string
@@ -8,6 +12,7 @@ interface UserSuggestion {
   tags: string[]
   matchRate: number
   bookCount: number
+  lastBook?: string
 }
 
 const GENRE_COLORS: Record<string, string> = {
@@ -21,6 +26,13 @@ const GENRE_COLORS: Record<string, string> = {
   경제: '#2E7D6E',
   기타: 'var(--color-text-3)',
 }
+
+const BOOK_RECS = [
+  { recommender: '지수', title: '달러구트 꿈 백화점', genre: '소설' },
+  { recommender: '민준', title: '사피엔스', genre: '인문' },
+  { recommender: '서연', title: '코스모스', genre: '과학' },
+  { recommender: '현우', title: '채식주의자', genre: '소설' },
+]
 
 function calcMatchRate(a: string[], b: string[]): number {
   if (a.length === 0 || b.length === 0) return 0
@@ -38,11 +50,11 @@ function Avatar({ url, nickname, size = 52 }: { url: string | null; nickname: st
       style={{
         width: size,
         height: size,
-        backgroundColor: url ? undefined : 'var(--color-border)',
+        backgroundColor: url ? undefined : '#D4CAC2',
         backgroundImage: url ? `url(${url})` : undefined,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        color: 'var(--color-text-2)',
+        color: '#6B5E57',
         fontSize: size * 0.38,
       }}
     >
@@ -64,16 +76,15 @@ export default async function ExplorePage() {
 
   if (profileError) {
     return (
-      <div className="min-h-screen bg-canvas px-5 pt-14">
-        <h1 className="text-xl font-bold text-text-1 mb-4">탐색</h1>
-        <p className="text-sm text-text-3">오류가 발생했어요</p>
+      <div className="min-h-screen bg-[#F5F0E8] px-5 pt-14">
+        <h1 className="text-[22px] font-bold text-[#1C1410] mb-4">탐색</h1>
+        <p className="text-sm text-[#8C7B6E]">오류가 발생했어요</p>
       </div>
     )
   }
 
   const myTags: string[] = myProfile?.tags ?? []
 
-  // 이미 친구인 유저 ID 목록
   const { data: myFriendships } = await supabase
     .from('friendships')
     .select('friend_id')
@@ -82,7 +93,6 @@ export default async function ExplorePage() {
   const friendIds = new Set((myFriendships ?? []).map((f: { friend_id: string }) => f.friend_id))
   friendIds.add(user.id)
 
-  // 다른 유저 프로필 + 완독 수
   const { data: others } = await supabase
     .from('profiles')
     .select('id, nickname, avatar_url, tags')
@@ -119,135 +129,142 @@ export default async function ExplorePage() {
     .sort((a, b) => b.matchRate - a.matchRate)
     .slice(0, 20)
 
-  const topMatch = suggestions[0]
-  const hasMyTags = myTags.length > 0
+  // 상위 유저 최근 완독 책 조회
+  const topIds = suggestions.slice(0, 8).map((s) => s.id)
+  const lastBookMap: Record<string, string> = {}
+  if (topIds.length > 0) {
+    const { data: lastBooks } = await supabase
+      .from('book_records')
+      .select('user_id, title')
+      .in('user_id', topIds)
+      .eq('status', 'done')
+      .order('updated_at', { ascending: false })
+    if (lastBooks) {
+      for (const b of lastBooks as { user_id: string; title: string }[]) {
+        if (!lastBookMap[b.user_id]) lastBookMap[b.user_id] = b.title
+      }
+    }
+  }
+
+  const enriched = suggestions.map((s) => ({ ...s, lastBook: lastBookMap[s.id] }))
+  const weeklyTop3 = enriched.slice(0, 3)
+  const matchList = enriched.slice(0, 8)
 
   return (
-    <div className="min-h-screen bg-canvas">
-      {/* Header */}
-      <div className="px-5 pt-14 pb-4">
-        <h1 className="text-xl font-bold text-text-1">탐색</h1>
-        <p className="text-xs mt-1 text-text-3">취향이 비슷한 독자를 만나보세요</p>
+    <div className="min-h-screen bg-[#F5F0E8]">
+      {/* TopBar */}
+      <div className="flex items-center justify-between px-5 pt-[60px] pb-4">
+        <h1 className="text-[22px] font-bold text-[#1C1410]">탐색</h1>
+        <button className="w-[44px] h-[44px] flex items-center justify-center">
+          <Search size={24} color="#3D3530" />
+        </button>
       </div>
 
-      {/* 내 취향 태그 */}
-      <section className="px-5 mb-6">
-        <p className="text-xs font-semibold mb-2 text-text-2">내 관심 장르</p>
-        <div className="rounded-2xl p-4 bg-surface border border-border">
-          {!hasMyTags ? (
-            <p className="text-sm text-center text-text-3">
-              아직 관심 장르가 없어요{' '}
-              <span className="text-primary">내서재</span>에서 설정해보세요
-            </p>
-          ) : (
-            <div className="flex flex-wrap gap-2">
-              {myTags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-3 py-1 rounded-full text-xs font-medium text-white"
-                  style={{ backgroundColor: GENRE_COLORS[tag] ?? 'var(--color-text-3)' }}
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* 이번 주 추천 */}
-      {topMatch && topMatch.matchRate > 0 && (
-        <section className="px-5 mb-6">
-          <p className="text-xs font-semibold mb-2 text-text-2">이번 주 베스트 매치</p>
-          <div
-            className="rounded-2xl p-4 bg-surface border border-border flex items-center gap-4"
-            style={{ borderColor: 'var(--color-primary)', borderWidth: 1.5 }}
-          >
-            <div className="relative">
-              <Avatar url={topMatch.avatar_url} nickname={topMatch.nickname} size={56} />
-              <span
-                className="absolute -top-1 -right-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full text-white"
-                style={{ backgroundColor: 'var(--color-primary)' }}
-              >
-                {topMatch.matchRate}%
-              </span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-text-1">{topMatch.nickname}</p>
-              <p className="text-xs mt-0.5 text-text-3">완독 {topMatch.bookCount}권</p>
-              <div className="flex flex-wrap gap-1 mt-2">
-                {topMatch.tags.slice(0, 3).map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-2 py-0.5 rounded-full text-[11px] font-medium text-white"
-                    style={{ backgroundColor: GENRE_COLORS[tag] ?? 'var(--color-text-3)' }}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div className="flex flex-col items-end gap-2">
-              <div
-                className="w-12 h-12 rounded-full flex items-center justify-center"
-                style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-amber))' }}
-              >
-                <span className="text-white text-xs font-bold">{topMatch.matchRate}%</span>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 추천 목록 */}
-      <section className="px-5 mb-6">
-        <p className="text-xs font-semibold mb-2 text-text-2">
-          취향 맞는 독자 {suggestions.length}명
-        </p>
-        {suggestions.length === 0 ? (
-          <div className="rounded-2xl p-8 text-center bg-surface border border-border">
-            <p className="text-3xl mb-3">🔍</p>
-            <p className="text-sm font-medium text-text-1">아직 추천할 독자가 없어요</p>
-            <p className="text-xs mt-1 text-text-3">더 많은 책을 기록하면 매칭이 정확해져요</p>
+      {/* 1. 이번 주 독서 친구 추천 */}
+      <section className="px-5 mb-8">
+        <SectionHeader title="이번 주 독서 친구 추천" rightLabel="매주 금요일 갱신" />
+        {weeklyTop3.length === 0 ? (
+          <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
+            <p className="text-sm text-[#8C7B6E]">추천할 독자가 없어요</p>
           </div>
         ) : (
-          <div className="rounded-2xl overflow-hidden bg-surface border border-border">
-            {suggestions.map((u, i) => (
-              <div
-                key={u.id}
-                className="flex items-center gap-3 px-4 py-3.5"
-                style={i < suggestions.length - 1 ? { borderBottom: '1px solid var(--color-canvas)' } : {}}
-              >
-                <Avatar url={u.avatar_url} nickname={u.nickname} size={44} />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-text-1">{u.nickname}</p>
-                  <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                    {u.tags.slice(0, 2).map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-2 py-0.5 rounded-full text-[10px] font-medium text-white"
-                        style={{ backgroundColor: GENRE_COLORS[tag] ?? 'var(--color-text-3)' }}
-                      >
-                        {tag}
-                      </span>
+          <div className="flex flex-col gap-3">
+            {weeklyTop3.map((u) => (
+              <div key={u.id} className="bg-white rounded-2xl shadow-sm p-4">
+                <div className="flex items-center gap-3">
+                  <Avatar url={u.avatar_url} nickname={u.nickname} size={40} />
+                  <span className="text-[15px] font-semibold text-[#1C1410]">{u.nickname}</span>
+                  <MatchBadge percentage={u.matchRate} />
+                  <button className="ml-auto border border-[#D4CAC2] rounded-lg h-[36px] px-4 text-[13px] text-[#3D3530]">
+                    추가
+                  </button>
+                </div>
+                {u.lastBook && (
+                  <p className="text-[13px] text-[#6B5E57] ml-[48px] mt-1">
+                    최근 읽은 책: {u.lastBook}
+                  </p>
+                )}
+                {u.tags.length > 0 && (
+                  <div className="flex gap-1.5 ml-[48px] mt-1.5">
+                    {u.tags.slice(0, 3).map((tag) => (
+                      <GenreTag key={tag} label={tag} color={GENRE_COLORS[tag]} />
                     ))}
-                    <span className="text-[11px] text-text-3">완독 {u.bookCount}권</span>
                   </div>
-                </div>
-                <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                  {u.matchRate > 0 ? (
-                    <>
-                      <span className="text-sm font-bold text-primary">{u.matchRate}%</span>
-                      <span className="text-[10px] text-text-3">일치</span>
-                    </>
-                  ) : (
-                    <span className="text-[11px] text-text-3">새로운 취향</span>
-                  )}
-                </div>
+                )}
               </div>
             ))}
           </div>
         )}
+      </section>
+
+      {/* 2. 취향이 잘 맞는 독서가 */}
+      <section className="px-5 mb-8">
+        <SectionHeader title="취향이 잘 맞는 독서가" />
+        {matchList.length === 0 ? (
+          <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
+            <p className="text-sm text-[#8C7B6E]">매칭되는 독자가 없어요</p>
+          </div>
+        ) : (
+          <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+            {matchList.slice(0, 4).map((u, i) => (
+              <div
+                key={u.id}
+                className="h-[72px] px-4 flex items-center gap-3"
+                style={i > 0 ? { borderTop: '1px solid #EDE8E1' } : {}}
+              >
+                <Avatar url={u.avatar_url} nickname={u.nickname} size={48} />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[15px] font-semibold text-[#1C1410] truncate">{u.nickname}</span>
+                    <MatchBadge percentage={u.matchRate} />
+                  </div>
+                  {u.lastBook && (
+                    <p className="text-[13px] text-[#6B5E57] truncate">{u.lastBook}</p>
+                  )}
+                  {u.tags.length > 0 && (
+                    <div className="flex gap-1 mt-0.5">
+                      {u.tags.slice(0, 2).map((tag) => (
+                        <GenreTag key={tag} label={tag} color={GENRE_COLORS[tag]} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <button className="flex-shrink-0 border border-[#D4CAC2] rounded-lg h-[36px] px-4 text-[13px] text-[#3D3530]">
+                  추가
+                </button>
+              </div>
+            ))}
+            {matchList.length > 4 && (
+              <button className="text-[14px] text-[#6B5E57] text-center w-full py-3 border-t border-[#EDE8E1]">
+                더 보기
+              </button>
+            )}
+          </div>
+        )}
+      </section>
+
+      {/* 3. 서로 책 추천하기 */}
+      <section className="px-5 mb-8">
+        <div className="flex justify-between items-center mb-3">
+          <span className="text-[17px] font-semibold text-[#3D3530]">서로 책 추천하기</span>
+          <button className="text-[13px] font-medium text-[#4A7C59]">+ 책 추천하기</button>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          {BOOK_RECS.map((rec, i) => (
+            <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm">
+              <div className="h-[100px] bg-[#EDE8E1]" />
+              <div className="p-3">
+                <span className="inline-block text-[12px] font-medium px-2 py-0.5 rounded-full bg-[#EBF3ED] text-[#2D5A35]">
+                  {rec.recommender}님 추천
+                </span>
+                <p className="text-[14px] font-semibold text-[#1C1410] mt-1.5 truncate">{rec.title}</p>
+                <div className="mt-1">
+                  <GenreTag label={rec.genre} />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
 
       <div className="h-6" />

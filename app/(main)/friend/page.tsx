@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { Search, UserPlus, ChevronRight } from 'lucide-react'
+import SectionHeader from '@/components/shared/SectionHeader'
 
 interface Friend {
   id: string
@@ -31,10 +33,10 @@ const GENRE_COLORS: Record<string, string> = {
   기타: 'var(--color-text-3)',
 }
 
-const LEVEL_CONFIG = {
-  sprout: { label: '새싹', icon: '🌱', bg: 'var(--friendship-sprout-bg)', text: 'var(--friendship-sprout-text)' },
-  tree: { label: '나무', icon: '🌳', bg: 'var(--friendship-tree-bg)', text: 'var(--friendship-tree-text)' },
-  forest: { label: '숲', icon: '🌲', bg: 'var(--friendship-forest-bg)', text: 'var(--friendship-forest-text)' },
+const LEVEL_MAP: Record<Friend['friendship_level'], { label: string; color: string }> = {
+  sprout: { label: '연결 중', color: '#C47D2E' },
+  tree: { label: '대화 가능', color: '#4A6FA5' },
+  forest: { label: '무제한', color: '#8C7B6E' },
 }
 
 function Avatar({ url, nickname, size = 44, online = false }: {
@@ -74,6 +76,14 @@ export default async function FriendPage() {
   const supabase = await createClient()
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) redirect('/login')
+
+  // 내 프로필
+  const { data: profileData } = await supabase
+    .from('profiles')
+    .select('nickname, avatar_url')
+    .eq('id', user.id)
+    .single()
+  const myProfile = profileData ?? { nickname: user.email?.split('@')[0] ?? '나', avatar_url: null }
 
   // 내 독서 DNA
   const { data: myBooks } = await supabase
@@ -140,21 +150,28 @@ export default async function FriendPage() {
 
   return (
     <div className="min-h-screen bg-canvas">
-      {/* Header */}
-      <div className="px-5 pt-14 pb-4">
-        <h1 className="text-xl font-bold text-text-1">친구</h1>
+      {/* 1. TopBar */}
+      <div className="flex items-center justify-between px-5 pt-[60px] pb-4">
+        <h1 className="text-[22px] font-bold text-[#1C1410]">독서 친구</h1>
+        <div className="flex items-center gap-4">
+          <button className="w-[44px] h-[44px] flex items-center justify-center">
+            <Search size={24} color="#3D3530" />
+          </button>
+          <button className="w-[44px] h-[44px] flex items-center justify-center">
+            <UserPlus size={24} color="#3D3530" />
+          </button>
+        </div>
       </div>
 
-      {/* 나의 독서 DNA */}
-      <section className="px-5 mb-6">
-        <p className="text-xs font-semibold mb-2 text-text-2">나의 독서 DNA</p>
-        <div className="rounded-2xl p-4 bg-surface border border-border">
+      {/* 2. 나의 독서 DNA 카드 */}
+      <div className="mx-5 mb-8">
+        <div className="bg-[#3D2C24] rounded-2xl p-5 relative">
+          <p className="text-[13px] text-white/55 mb-3">나의 독서 DNA</p>
           {myDNA.length === 0 ? (
-            <p className="text-sm text-center text-text-3">완독한 책이 없어요</p>
+            <p className="text-[14px] text-white/55">완독한 책이 없어요</p>
           ) : (
             <>
-              {/* 세그먼트 바 */}
-              <div className="flex w-full h-3 rounded-full overflow-hidden mb-3">
+              <div className="h-2 rounded-full flex overflow-hidden">
                 {myDNA.map(({ genre, count, color }) => (
                   <div
                     key={genre}
@@ -162,132 +179,115 @@ export default async function FriendPage() {
                   />
                 ))}
               </div>
-              {/* 범례 */}
-              <div className="flex flex-wrap gap-x-3 gap-y-1">
-                {myDNA.map(({ genre, count, color }) => (
-                  <div key={genre} className="flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
-                    <span className="text-[11px] text-text-2">
-                      {genre} {Math.round((count / totalBooks) * 100)}%
-                    </span>
+              <div className="mt-2 flex flex-wrap gap-3">
+                {myDNA.map(({ genre, color }) => (
+                  <div key={genre} className="flex items-center gap-1.5">
+                    <span
+                      className="rounded-full flex-shrink-0"
+                      style={{ width: 6, height: 6, backgroundColor: color }}
+                    />
+                    <span className="text-[11px] text-white/70">{genre}</span>
                   </div>
                 ))}
               </div>
             </>
           )}
+          {/* 우측 아바타 */}
+          <div className="absolute right-5 top-1/2 -translate-y-1/2">
+            <Avatar url={myProfile.avatar_url} nickname={myProfile.nickname} size={48} />
+          </div>
+        </div>
+      </div>
+
+      {/* 3. 친구들의 최근 기록 */}
+      <section className="mb-8">
+        <div className="px-5">
+          <SectionHeader title="친구들의 최근 기록" />
+        </div>
+        <div className="flex items-start gap-5 px-5 overflow-x-auto scrollbar-none pb-1">
+          {/* 친구 추가 버튼 */}
+          <div className="flex flex-col items-center gap-1.5 flex-shrink-0">
+            <div className="w-8 h-8 rounded-full border border-dashed border-[#8C7B6E] flex items-center justify-center">
+              <span className="text-[14px] text-[#8C7B6E]">+</span>
+            </div>
+            <span className="text-[12px] text-[#8C7B6E]">추가</span>
+          </div>
+          {/* 온라인 친구 */}
+          {onlineFriends.map((f) => (
+            <Link key={f.id} href={`/chat/${f.id}`} className="flex flex-col items-center gap-1.5 flex-shrink-0">
+              <Avatar url={f.avatar_url} nickname={f.nickname} size={32} online />
+              <span className="text-[12px] text-[#3D3530]">{f.nickname}</span>
+            </Link>
+          ))}
         </div>
       </section>
 
-      {/* 온라인 친구 스토리 */}
-      {onlineFriends.length > 0 && (
-        <section className="mb-6">
-          <p className="text-xs font-semibold px-5 mb-3 text-text-2">
-            지금 온라인
-          </p>
-          <div className="flex gap-4 overflow-x-auto px-5 pb-1 scrollbar-none">
-            {onlineFriends.map((f) => (
-              <Link key={f.id} href={`/chat/${f.id}`} className="flex flex-col items-center gap-1.5 flex-shrink-0">
-                <div
-                  className="p-0.5 rounded-full"
-                  style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-amber))' }}
-                >
-                  <div className="p-0.5 rounded-full bg-white">
-                    <Avatar url={f.avatar_url} nickname={f.nickname} size={52} online />
-                  </div>
-                </div>
-                <span className="text-[11px] text-text-2">{f.nickname}</span>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* 친구 목록 그룹 */}
-      {friends.length === 0 ? (
-        <div className="px-5">
+      {/* 4. 친구 목록 */}
+      <section className="px-5 mb-8">
+        <SectionHeader title={`친구 목록 (${friends.length}명)`} />
+        {friends.length === 0 ? (
           <div className="rounded-2xl p-8 text-center bg-surface border border-border">
             <p className="text-3xl mb-3">🌱</p>
             <p className="text-sm font-medium text-text-1">아직 친구가 없어요</p>
             <p className="text-xs mt-1 text-text-3">친구를 추가해 독서를 함께해요</p>
           </div>
-        </div>
-      ) : (
-        <div className="px-5 flex flex-col gap-5">
-          {([
-            { key: 'forest', list: forests },
-            { key: 'tree', list: trees },
-            { key: 'sprout', list: sprouts },
-          ] as { key: Friend['friendship_level']; list: Friend[] }[])
-            .filter(({ list }) => list.length > 0)
-            .map(({ key, list }) => {
-              const cfg = LEVEL_CONFIG[key]
-              return (
-                <div key={key}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-base">{cfg.icon}</span>
-                    <span className="text-sm font-semibold text-text-1">{cfg.label}</span>
-                    <span
-                      className="text-xs px-2 py-0.5 rounded-full font-medium"
-                      style={{ backgroundColor: cfg.bg, color: cfg.text }}
+        ) : (
+          <div className="flex flex-col">
+            {(
+              [
+                { key: 'sprout' as const, list: sprouts },
+                { key: 'tree' as const, list: trees },
+                { key: 'forest' as const, list: forests },
+              ] as { key: Friend['friendship_level']; list: Friend[] }[]
+            )
+              .filter(({ list }) => list.length > 0)
+              .map(({ key, list }, groupIndex) => {
+                const cfg = LEVEL_MAP[key]
+                return (
+                  <div key={key} className={groupIndex > 0 ? 'mt-4' : ''}>
+                    <p
+                      className="text-[13px] font-semibold mb-2"
+                      style={{ color: cfg.color }}
                     >
-                      {list.length}명
-                    </span>
-                  </div>
-                  <div className="rounded-2xl overflow-hidden bg-surface border border-border">
-                    {list.map((f, i) => (
-                      <Link
-                        key={f.id}
-                        href={`/chat/${f.id}`}
-                        className="flex items-center gap-3 px-4 py-3.5 active:bg-gray-50"
-                        style={i < list.length - 1 ? { borderBottom: '1px solid var(--color-canvas)' } : {}}
-                      >
-                        <Avatar url={f.avatar_url} nickname={f.nickname} online={f.is_online} />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-0.5">
-                            <span className="text-sm font-semibold text-text-1">
-                              {f.nickname}
-                            </span>
-                            <span
-                              className="text-[10px] px-1.5 py-0.5 rounded-full font-medium"
-                              style={{ backgroundColor: cfg.bg, color: cfg.text }}
-                            >
-                              {cfg.icon} {cfg.label}
-                            </span>
+                      {cfg.label}
+                    </p>
+                    <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+                      {list.map((f, i) => (
+                        <Link
+                          key={f.id}
+                          href={`/chat/${f.id}`}
+                          className="h-[80px] px-4 flex items-center gap-3 active:bg-gray-50"
+                          style={i < list.length - 1 ? { borderBottom: '1px solid #EDE8E1' } : {}}
+                        >
+                          <Avatar url={f.avatar_url} nickname={f.nickname} size={48} online={f.is_online} />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <span className="text-[15px] font-semibold text-[#1C1410]">
+                                {f.nickname}
+                              </span>
+                              <span
+                                className="text-[11px] px-1.5 py-0.5 rounded-full font-medium"
+                                style={{ color: cfg.color, backgroundColor: `${cfg.color}18` }}
+                              >
+                                {cfg.label}
+                              </span>
+                            </div>
+                            {f.last_message && (
+                              <p className="text-[13px] truncate text-[#6B5E57]">
+                                {f.last_message}
+                              </p>
+                            )}
                           </div>
-                          {f.last_message && (
-                            <p className="text-xs truncate text-text-3">
-                              {f.last_message}
-                            </p>
-                          )}
-                        </div>
-                        <div className="flex-shrink-0 text-right">
-                          <span className="text-[11px] font-medium text-amber">
-                            D+{f.days_together}
-                          </span>
-                        </div>
-                      </Link>
-                    ))}
+                          <ChevronRight size={16} color="#8C7B6E" className="flex-shrink-0" />
+                        </Link>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )
-            })}
-        </div>
-      )}
-
-      {/* 친구 추가 FAB */}
-      <button
-        className="fixed bottom-24 right-5 w-14 h-14 rounded-full flex items-center justify-center shadow-lg z-40 bg-primary"
-      >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <path d="M16 11C17.6569 11 19 9.65685 19 8C19 6.34315 17.6569 5 16 5" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-          <path d="M21 17C21 14.7909 18.7614 13 16 13" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-          <circle cx="9" cy="8" r="3" stroke="white" strokeWidth="2"/>
-          <path d="M3 19C3 16.2386 5.68629 14 9 14C12.3137 14 15 16.2386 15 19" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-          <path d="M9 19V21M8 20H10" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-        </svg>
-      </button>
-
-      <div className="h-6" />
+                )
+              })}
+          </div>
+        )}
+      </section>
     </div>
   )
 }
