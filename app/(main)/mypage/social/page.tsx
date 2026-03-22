@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 interface SocialAccount {
-  provider: 'kakao' | 'naver' | 'google' | 'apple';
+  provider: 'kakao' | /* 'naver' | */ 'google' /* | 'apple' */;
   name: string;
   connected: boolean;
   connectedAt?: string;
@@ -11,9 +11,9 @@ interface SocialAccount {
 
 const INITIAL_ACCOUNTS: SocialAccount[] = [
   { provider: 'kakao', name: '카카오', connected: true, connectedAt: '2025.12.01' },
-  { provider: 'naver', name: '네이버', connected: true, connectedAt: '2025.12.15' },
+  // { provider: 'naver', name: '네이버', connected: true, connectedAt: '2025.12.15' },
   { provider: 'google', name: '구글', connected: false },
-  { provider: 'apple', name: '애플', connected: false },
+  // { provider: 'apple', name: '애플', connected: false },
 ];
 
 function KakaoIcon() {
@@ -28,14 +28,14 @@ function KakaoIcon() {
   );
 }
 
-function NaverIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <rect width="24" height="24" rx="6" fill="#03C75A" />
-      <path d="M13.4 12.2L10.4 7H8v10h2.6v-5.2L13.6 17H16V7h-2.6v5.2z" fill="white" />
-    </svg>
-  );
-}
+// function NaverIcon() {
+//   return (
+//     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+//       <rect width="24" height="24" rx="6" fill="#03C75A" />
+//       <path d="M13.4 12.2L10.4 7H8v10h2.6v-5.2L13.6 17H16V7h-2.6v5.2z" fill="white" />
+//     </svg>
+//   );
+// }
 
 function GoogleIcon() {
   return (
@@ -49,23 +49,23 @@ function GoogleIcon() {
   );
 }
 
-function AppleIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <rect width="24" height="24" rx="6" fill="#1A1A1A" />
-      <path
-        d="M15.6 7.3c-.9 1.1-.8 2.2-.8 2.2s1.2.1 2.1-1c.8-1 .8-2.2.8-2.2s-1.2-.1-2.1 1zM17.5 10.1c-.5-.3-1.4-.5-2.2-.5-1 0-1.4.5-2.2.5-.8 0-1.4-.5-2.2-.5-1.6 0-3.4 1.4-3.4 4.2 0 2.2 1.2 5.7 2.8 5.7.7 0 1.3-.5 2-.5.8 0 1.2.5 2.1.5.7 0 1.3-.4 1.8-1 .5-.6.8-1.4 1-2.2-1-.5-1.8-1.5-1.8-2.8 0-1.2.7-2.2 1.8-2.7l-.7-.7z"
-        fill="white"
-      />
-    </svg>
-  );
-}
+// function AppleIcon() {
+//   return (
+//     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+//       <rect width="24" height="24" rx="6" fill="#1A1A1A" />
+//       <path
+//         d="M15.6 7.3c-.9 1.1-.8 2.2-.8 2.2s1.2.1 2.1-1c.8-1 .8-2.2.8-2.2s-1.2-.1-2.1 1zM17.5 10.1c-.5-.3-1.4-.5-2.2-.5-1 0-1.4.5-2.2.5-.8 0-1.4-.5-2.2-.5-1.6 0-3.4 1.4-3.4 4.2 0 2.2 1.2 5.7 2.8 5.7.7 0 1.3-.5 2-.5.8 0 1.2.5 2.1.5.7 0 1.3-.4 1.8-1 .5-.6.8-1.4 1-2.2-1-.5-1.8-1.5-1.8-2.8 0-1.2.7-2.2 1.8-2.7l-.7-.7z"
+//         fill="white"
+//       />
+//     </svg>
+//   );
+// }
 
 const PROVIDER_ICONS = {
   kakao: <KakaoIcon />,
-  naver: <NaverIcon />,
+  // naver: <NaverIcon />,
   google: <GoogleIcon />,
-  apple: <AppleIcon />,
+  // apple: <AppleIcon />,
 };
 
 export default function SocialPage() {
