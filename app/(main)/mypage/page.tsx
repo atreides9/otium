@@ -16,7 +16,7 @@ interface UserBadge {
   id: string
   earned_at: string
   badge: {
-    name: string
+    badge_name: string
     emoji: string
     description: string
   }
@@ -86,7 +86,7 @@ export default async function MyPage() {
       .single(),
     supabase
       .from('user_badges')
-      .select('id, earned_at, badge:badges(name, emoji, description)')
+      .select('id, earned_at, badge:badges(badge_name, emoji, description)')
       .eq('user_id', user.id)
       .order('earned_at', { ascending: false })
       .limit(6),
@@ -127,9 +127,9 @@ export default async function MyPage() {
     badges.length > 0
       ? badges
       : [
-          { id: '1', earned_at: new Date().toISOString(), badge: { name: '첫완독', emoji: '📚', description: '첫 번째 완독' } },
-          { id: '2', earned_at: new Date().toISOString(), badge: { name: '7일연속', emoji: '🔥', description: '7일 연속 독서' } },
-          { id: '3', earned_at: new Date().toISOString(), badge: { name: '장르탐험가', emoji: '✨', description: '3가지 장르 완독' } },
+          { id: '1', earned_at: new Date().toISOString(), badge: { badge_name: '첫완독', emoji: '📚', description: '첫 번째 완독' } },
+          { id: '2', earned_at: new Date().toISOString(), badge: { badge_name: '7일연속', emoji: '🔥', description: '7일 연속 독서' } },
+          { id: '3', earned_at: new Date().toISOString(), badge: { badge_name: '장르탐험가', emoji: '✨', description: '3가지 장르 완독' } },
         ]
 
   return (
@@ -208,8 +208,8 @@ export default async function MyPage() {
               key={ub.id}
               className="flex-shrink-0 w-[88px] bg-[#3D2C24] rounded-2xl p-3 flex flex-col items-center gap-1"
             >
-              <span className="text-[32px]">{ub.badge.emoji || BADGE_ICON_MAP[ub.badge.name] || '🏅'}</span>
-              <p className="text-[12px] font-semibold text-white text-center">{ub.badge.name}</p>
+              <span className="text-[32px]">{ub.badge.emoji || BADGE_ICON_MAP[ub.badge.badge_name] || '🏅'}</span>
+              <p className="text-[12px] font-semibold text-white text-center">{ub.badge.badge_name}</p>
               <p className="text-[10px] text-[#8C7B6E]">{formatBadgeDate(ub.earned_at)}</p>
             </div>
           ))}

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import {
   BarChart,
   Bar,
@@ -442,6 +443,16 @@ export default function RecordPage() {
       {activeTab === '완독한 책' && <FinishedBooksTab />}
       {activeTab === '독서지도' && <ReadingMapTab />}
       {activeTab === '선호작가' && <FavoriteAuthorsTab />}
+
+      {/* FAB */}
+      <Link
+        href="/record/add"
+        className="fixed bottom-[76px] right-5 w-[60px] h-[60px] rounded-full flex items-center justify-center shadow-lg z-40 bg-[#3D3530]"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M12 5V19M5 12H19" stroke="#FFFFFF" strokeWidth="2.2" strokeLinecap="round" />
+        </svg>
+      </Link>
     </div>
   )
 }
