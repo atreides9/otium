@@ -4,9 +4,9 @@ import { createClient } from '@/lib/supabase/client'
 import { Provider } from '@supabase/supabase-js'
 
 const providers: { id: Provider; label: string; bg: string; text: string; border?: string }[] = [
-  { id: 'kakao', label: '카카오로 계속하기', bg: '#FEE500', text: '#000000' },
+  // { id: 'kakao', label: '카카오로 계속하기', bg: '#FEE500', text: '#000000' },
   { id: 'google', label: 'Google로 계속하기', bg: 'var(--color-surface)', text: 'var(--color-text-1)', border: 'var(--color-border)' },
-  { id: 'apple', label: 'Apple로 계속하기', bg: '#000000', text: '#FFFFFF' },
+  // { id: 'apple', label: 'Apple로 계속하기', bg: '#000000', text: '#FFFFFF' },
 ]
 
 export default function LoginPage() {
